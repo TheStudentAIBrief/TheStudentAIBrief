@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Command Centre — The Student AI Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --surface: #1A1A1A;
+    --gold: #D4AF37;
+    --text: #F0EDE8;
+    --stone: #9A9A8A;
+    --alert: #E8920A;
+    --red: #C0392B;
+    --green: #4A9E5C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+  }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: #000;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.9rem 2rem;
+  }
+
+  .wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-tabs button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--stone);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    border-radius: 0;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-tabs button:hover { color: var(--text); }
+
+  .nav-tabs button.active {
+    color: var(--gold);
+    border-color: rgba(212, 175, 55, 0.4);
+  }
+
+  /* ---------- Layout ---------- */
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 8.5rem 1.5rem 5rem;
+  }
+
+  section.module { display: none; }
+  section.module.active { display: block; }
+
+  .card {
+    background: rgba(26, 26, 26, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .card h2 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .card .subtitle {
+    color: var(--stone);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+
+  /* ---------- Forms ---------- */
+  label {
+    display: block;
+    color: var(--stone);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  input[type="number"], input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    background: rgba(10, 10, 10, 0.6);
+    border: 1px solid rgba(154, 154, 138, 0.25);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0;
+    margin-bottom: 1.4rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, textarea:focus { border-color: rgba(212, 175, 55, 0.55); }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  button.btn {
+    background: var(--gold);
+    color: #0A0A0A;
+    border: none;
+    border-radius: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.8rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  button.btn:hover { opacity: 0.85; }
+  button.btn:disabled { opacity: 0.4; cursor: wait; }
+
+  button.btn-ghost {
+    background: transparent;
+    color: var(--stone);
+    border: 1px solid rgba(154, 154, 138, 0.35);
+    border-radius: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  button.btn-ghost:hover { color: var(--gold); border-color: rgba(212, 175, 55, 0.5); }
+
+  /* ---------- Output blocks ---------- */
+  .output-block {
+    background: rgba(10, 10, 10, 0.7);
+    border-left: 3px solid var(--gold);
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 1.5rem;
+    margin-top: 1.75rem;
+    color: var(--text);
+  }
+
+  .output-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.6rem;
+  }
+
+  .status-line {
+    font-size: 0.8rem;
+    color: var(--stone);
+    margin-top: 1rem;
+    min-height: 1.2rem;
+  }
+
+  .status-line.error { color: var(--alert); }
+
+  /* ---------- Last session display ---------- */
+  .session-summary {
+    margin-top: 2rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.12);
+    padding-top: 1.5rem;
+  }
+
+  .session-summary h3 {
+    color: var(--stone);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .session-summary dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .session-summary dt { color: var(--stone); }
+  .session-summary dd { color: var(--text); white-space: pre-wrap; }
+
+  /* ---------- Metrics ---------- */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .metric-card {
+    background: rgba(10, 10, 10, 0.55);
+    border: 1px solid rgba(154, 154, 138, 0.18);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .metric-card .metric-label {
+    color: var(--stone);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .metric-card .metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .metric-card .metric-status {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .status-red { color: var(--red); }
+  .status-healthy { color: var(--green); }
+  .status-excellent { color: var(--gold); }
+  .status-warn { color: var(--alert); }
+  .status-na { color: var(--stone); }
+
+  /* ---------- Phase indicator ---------- */
+  .phase-indicator h3 {
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .phase-indicator p {
+    color: var(--stone);
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: rgba(154, 154, 138, 0.15);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  .progress-caption {
+    display: flex;
+    justify-content: space-between;
+    color: var(--stone);
+    font-size: 0.7rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ---------- API key modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: rgba(26, 26, 26, 0.95);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 2.75rem;
+    max-width: 460px;
+    width: 100%;
+  }
+
+  .modal-box h2 {
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .modal-box p {
+    color: var(--stone);
+    font-size: 0.82rem;
+    margin-bottom: 1.75rem;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--stone);
+    font-size: 0.75rem;
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 640px) {
+    nav { padding: 0.75rem 1rem; }
+    main { padding-top: 10rem; }
+    .card { padding: 1.5rem; }
+    .field-row { grid-template-columns: 1fr; gap: 0; }
+    .metrics-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- API key modal -->
+<div class="modal-overlay" id="apiKeyModal">
+  <div class="modal-box">
+    <h2>API Key Required</h2>
+    <p>Enter your Anthropic API key to unlock the Command Centre. It is stored only in this browser's localStorage and never sent anywhere except api.anthropic.com.</p>
+    <label for="apiKeyInput">Anthropic API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    <button class="btn" id="saveApiKeyBtn">Save Key</button>
+  </div>
+</div>
+
+<nav>
+  <span class="wordmark">THE STUDENT AI BRIEF</span>
+  <div class="nav-tabs" id="navTabs">
+    <button data-tab="checkin" class="active">Check-In</button>
+    <button data-tab="tasks">Daily Tasks</button>
+    <button data-tab="drafter">Issue Drafter</button>
+    <button data-tab="dashboard">Dashboard</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- 1. SESSION CHECK-IN -->
+  <section class="module active" id="module-checkin">
+    <div class="card">
+      <h2>Session Check-In</h2>
+      <p class="subtitle">Log the current state of the newsletter before each working session.</p>
+
+      <div class="field-row">
+        <div>
+          <label for="ciSubs">Subscribers</label>
+          <input type="number" id="ciSubs" min="0" placeholder="0">
+        </div>
+        <div>
+          <label for="ciOpenRate">Open Rate (%)</label>
+          <input type="number" id="ciOpenRate" min="0" max="100" step="0.1" placeholder="0.0">
+        </div>
+      </div>
+
+      <label for="ciLastIssue">Last Issue Title</label>
+      <input type="text" id="ciLastIssue" placeholder="e.g. The 3 AI tools your lecturers don't know about">
+
+      <label for="ciTasksDone">Tasks Completed</label>
+      <textarea id="ciTasksDone" placeholder="What got done since last session?"></textarea>
+
+      <label for="ciBlockers">Blockers</label>
+      <textarea id="ciBlockers" placeholder="What's in the way?"></textarea>
+
+      <button class="btn" id="saveSessionBtn">Save Session</button>
+      <div class="status-line" id="checkinStatus"></div>
+
+      <div class="session-summary" id="lastSession" hidden>
+        <h3>Last Saved Session</h3>
+        <dl id="lastSessionData"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. DAILY TASKS -->
+  <section class="module" id="module-tasks">
+    <div class="card">
+      <h2>Daily Tasks</h2>
+      <p class="subtitle">Generates today's five 10-minute tasks from your latest session check-in.</p>
+
+      <button class="btn" id="generateTasksBtn">Generate Tasks</button>
+      <div class="status-line" id="tasksStatus"></div>
+      <div class="output-block" id="tasksOutput" hidden></div>
+    </div>
+  </section>
+
+  <!-- 3. ISSUE DRAFTER -->
+  <section class="module" id="module-drafter">
+    <div class="card">
+      <h2>Issue Drafter</h2>
+      <p class="subtitle">Drafts a full newsletter issue in the house structure and voice.</p>
+
+      <div class="field-row">
+        <div>
+          <label for="drIssueNum">Issue Number</label>
+          <input type="number" id="drIssueNum" min="1" placeholder="1">
+        </div>
+        <div>
+          <label for="drTopic">Topic / Focus</label>
+          <input type="text" id="drTopic" placeholder="e.g. AI for revision season">
+        </div>
+      </div>
+
+      <button class="btn" id="draftIssueBtn">Draft Issue</button>
+      <div class="status-line" id="drafterStatus"></div>
+      <div class="output-block" id="drafterOutput" hidden></div>
+      <div class="output-actions" id="drafterActions" hidden>
+        <button class="btn-ghost" id="copyDraftBtn">Copy Draft</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PERFORMANCE DASHBOARD -->
+  <section class="module" id="module-dashboard">
+    <div class="card">
+      <h2>Performance Dashboard</h2>
+      <p class="subtitle">Reads from your last saved session check-in.</p>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Open Rate</div>
+          <div class="metric-value" id="mOpenRate">—</div>
+          <div class="metric-status status-na" id="mOpenRateStatus">No data</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Sub Growth</div>
+          <div class="metric-value" id="mGrowth">—</div>
+          <div class="metric-status status-na" id="mGrowthStatus">No data</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Unsub Rate</div>
+          <div class="metric-value" id="mUnsub">—</div>
+          <div class="metric-status status-na" id="mUnsubStatus">No data</div>
+        </div>
+      </div>
+
+      <div class="phase-indicator">
+        <h3>Phase 1: 0–50 Subscribers</h3>
+        <p>Foundations — outreach, content rhythm, platform setup. No spend.</p>
+        <div class="progress-track">
+          <div class="progress-fill" id="phaseProgress"></div>
+        </div>
+        <div class="progress-caption">
+          <span id="phaseCount">0 subscribers</span>
+          <span>Target: 50</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>Command Centre v1 — not for public sharing</span>
+  <button class="btn-ghost" id="changeApiKeyBtn">Change API Key</button>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var API_KEY_STORAGE = "saib_api_key";
+  var SESSION_STORAGE = "saib_session";
+  var API_URL = "https://api.anthropic.com/v1/messages";
+
+  /* ---------------- API key handling ---------------- */
+
+  var modal = document.getElementById("apiKeyModal");
+  var apiKeyInput = document.getElementById("apiKeyInput");
+
+  function getApiKey() {
+    return localStorage.getItem(API_KEY_STORAGE) || "";
+  }
+
+  function openKeyModal() {
+    apiKeyInput.value = "";
+    modal.classList.add("open");
+    apiKeyInput.focus();
+  }
+
+  document.getElementById("saveApiKeyBtn").addEventListener("click", function () {
+    var key = apiKeyInput.value.trim();
+    if (!key) {
+      apiKeyInput.focus();
+      return;
+    }
+    localStorage.setItem(API_KEY_STORAGE, key);
+    modal.classList.remove("open");
+  });
+
+  apiKeyInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("saveApiKeyBtn").click();
+  });
+
+  document.getElementById("changeApiKeyBtn").addEventListener("click", openKeyModal);
+
+  if (!getApiKey()) openKeyModal();
+
+  /* ---------------- Anthropic API call ---------------- */
+
+  function callClaude(systemPrompt, userContent, maxTokens) {
+    var key = getApiKey();
+    if (!key) {
+      openKeyModal();
+      return Promise.reject(new Error("No API key set."));
+    }
+    return fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userContent }]
+      })
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          var msg = (data && data.error && data.error.message) || ("HTTP " + res.status);
+          throw new Error(msg);
+        }
+        if (data.stop_reason === "refusal") {
+          throw new Error("The model declined this request.");
+        }
+        var text = "";
+        (data.content || []).forEach(function (block) {
+          if (block.type === "text") text += block.text;
+        });
+        if (!text) throw new Error("Empty response from API.");
+        return text;
+      });
+    });
+  }
+
+  /* ---------------- Tab navigation ---------------- */
+
+  var tabs = document.querySelectorAll("#navTabs button");
+  tabs.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      tabs.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      document.querySelectorAll("section.module").forEach(function (s) {
+        s.classList.remove("active");
+      });
+      document.getElementById("module-" + btn.dataset.tab).classList.add("active");
+      if (btn.dataset.tab === "dashboard") renderDashboard();
+    });
+  });
+
+  /* ---------------- 1. Session check-in ---------------- */
+
+  function getSession() {
+    try {
+      return JSON.parse(localStorage.getItem(SESSION_STORAGE)) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function renderLastSession() {
+    var session = getSession();
+    var wrap = document.getElementById("lastSession");
+    var dl = document.getElementById("lastSessionData");
+    if (!session) { wrap.hidden = true; return; }
+
+    dl.innerHTML = "";
+    var rows = [
+      ["Saved", session.savedAt ? new Date(session.savedAt).toLocaleString("en-GB") : "—"],
+      ["Subscribers", session.subscribers],
+      ["Open rate", session.openRate + "%"],
+      ["Last issue", session.lastIssueTitle || "—"],
+      ["Tasks completed", session.tasksCompleted || "—"],
+      ["Blockers", session.blockers || "—"]
+    ];
+    rows.forEach(function (row) {
+      var dt = document.createElement("dt");
+      dt.textContent = row[0];
+      var dd = document.createElement("dd");
+      dd.textContent = row[1];
+      dl.appendChild(dt);
+      dl.appendChild(dd);
+    });
+    wrap.hidden = false;
+  }
+
+  document.getElementById("saveSessionBtn").addEventListener("click", function () {
+    var status = document.getElementById("checkinStatus");
+    var session = {
+      subscribers: Number(document.getElementById("ciSubs").value) || 0,
+      openRate: Number(document.getElementById("ciOpenRate").value) || 0,
+      lastIssueTitle: document.getElementById("ciLastIssue").value.trim(),
+      tasksCompleted: document.getElementById("ciTasksDone").value.trim(),
+      blockers: document.getElementById("ciBlockers").value.trim(),
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(SESSION_STORAGE, JSON.stringify(session));
+    status.classList.remove("error");
+    status.textContent = "Session saved.";
+    renderLastSession();
+  });
+
+  renderLastSession();
+
+  /* ---------------- 2. Daily tasks ---------------- */
+
+  var TASKS_SYSTEM_PROMPT =
+    "You are the operating boss of The Student AI Brief, a UK student AI newsletter on Beehiiv. " +
+    "Current phase: 0-50 subscribers. Generate exactly 5 tasks using this format: " +
+    "TASK [N] — [Title] (~X min) / What: / How: / Done when: / Why: — " +
+    "Each task max 10 minutes. No task requires money. " +
+    "Tasks must match this mix for sub count 0-50: 3x outreach, 1x content, 1x platform setup.";
+
+  document.getElementById("generateTasksBtn").addEventListener("click", function () {
+    var btn = this;
+    var status = document.getElementById("tasksStatus");
+    var output = document.getElementById("tasksOutput");
+    var session = getSession();
+
+    if (!session) {
+      status.classList.add("error");
+      status.textContent = "No saved session — fill in the Session Check-In first.";
+      return;
+    }
+
+    var context =
+      "Current session data:\n" +
+      "Subscribers: " + session.subscribers + "\n" +
+      "Open rate: " + session.openRate + "%\n" +
+      "Last issue: " + (session.lastIssueTitle || "none yet") + "\n" +
+      "Tasks completed last session: " + (session.tasksCompleted || "none") + "\n" +
+      "Blockers: " + (session.blockers || "none") + "\n\n" +
+      "Generate today's 5 tasks.";
+
+    btn.disabled = true;
+    status.classList.remove("error");
+    status.textContent = "Generating tasks…";
+    output.hidden = true;
+
+    callClaude(TASKS_SYSTEM_PROMPT, context, 1500)
+      .then(function (text) {
+        output.textContent = text;
+        output.hidden = false;
+        status.textContent = "";
+      })
+      .catch(function (err) {
+        status.classList.add("error");
+        status.textContent = "Error: " + err.message;
+      })
+      .then(function () {
+        btn.disabled = false;
+      });
+  });
+
+  /* ---------------- 3. Issue drafter ---------------- */
+
+  var DRAFTER_SYSTEM_PROMPT =
+    "You are the editor of The Student AI Brief, a UK student AI newsletter on Beehiiv. " +
+    "Write in the voice of a sharp, friendly UK university student talking to other students — " +
+    "plain English, UK spelling, no corporate fluff, no hype.\n\n" +
+    "Banned phrases (never use): \"game-changing\", \"revolutionary\", \"let's dive in\", " +
+    "\"in today's fast-paced world\".\n\n" +
+    "Draft a complete issue using exactly this structure, in this order:\n" +
+    "1. SUBJECT LINE — 20-45 characters, curiosity-driven, no clickbait.\n" +
+    "2. OPENING LINE — one short, punchy line that earns the next sentence.\n" +
+    "3. THIS WEEK'S FOCUS — the main section on the issue's topic. 150-250 words. " +
+    "Concrete, useful, specific to UK students.\n" +
+    "4. THE HACK — one practical AI tip a student can apply in under 5 minutes. Step-by-step.\n" +
+    "5. PROMPT OF THE WEEK — one copy-paste-ready prompt with a one-line note on when to use it.\n" +
+    "6. QUICK HITS — 3 one-line news items or tool mentions relevant to students. Each with a why-it-matters clause.\n" +
+    "7. REFERRAL CTA — 1-2 lines asking readers to share with a coursemate, casual tone.\n" +
+    "8. FOOTER — sign-off line plus an unsubscribe note.\n\n" +
+    "Label each section clearly in caps. Output plain text only — no markdown formatting.";
+
+  document.getElementById("draftIssueBtn").addEventListener("click", function () {
+    var btn = this;
+    var status = document.getElementById("drafterStatus");
+    var output = document.getElementById("drafterOutput");
+    var actions = document.getElementById("drafterActions");
+    var issueNum = document.getElementById("drIssueNum").value.trim();
+    var topic = document.getElementById("drTopic").value.trim();
+
+    if (!issueNum || !topic) {
+      status.classList.add("error");
+      status.textContent = "Enter an issue number and a topic first.";
+      return;
+    }
+
+    btn.disabled = true;
+    status.classList.remove("error");
+    status.textContent = "Drafting issue " + issueNum + "…";
+    output.hidden = true;
+    actions.hidden = true;
+
+    callClaude(
+      DRAFTER_SYSTEM_PROMPT,
+      "Draft issue #" + issueNum + " of The Student AI Brief.\nTopic/focus: " + topic,
+      2000
+    )
+      .then(function (text) {
+        output.textContent = text;
+        output.hidden = false;
+        actions.hidden = false;
+        status.textContent = "";
+      })
+      .catch(function (err) {
+        status.classList.add("error");
+        status.textContent = "Error: " + err.message;
+      })
+      .then(function () {
+        btn.disabled = false;
+      });
+  });
+
+  document.getElementById("copyDraftBtn").addEventListener("click", function () {
+    var btn = this;
+    var text = document.getElementById("drafterOutput").textContent;
+    navigator.clipboard.writeText(text).then(function () {
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = "Copy Draft"; }, 1500);
+    });
+  });
+
+  /* ---------------- 4. Performance dashboard ---------------- */
+
+  function setMetric(valueId, statusId, value, statusText, statusClass) {
+    document.getElementById(valueId).textContent = value;
+    var el = document.getElementById(statusId);
+    el.textContent = statusText;
+    el.className = "metric-status " + statusClass;
+  }
+
+  function renderDashboard() {
+    var session = getSession();
+
+    if (!session) {
+      setMetric("mOpenRate", "mOpenRateStatus", "—", "No data", "status-na");
+      setMetric("mGrowth", "mGrowthStatus", "—", "No data", "status-na");
+      setMetric("mUnsub", "mUnsubStatus", "—", "No data", "status-na");
+      document.getElementById("phaseProgress").style.width = "0%";
+      document.getElementById("phaseCount").textContent = "0 subscribers";
+      return;
+    }
+
+    // Open Rate: red <25%, healthy >37%, excellent >45%
+    var rate = session.openRate;
+    if (rate > 45) {
+      setMetric("mOpenRate", "mOpenRateStatus", rate + "%", "Excellent", "status-excellent");
+    } else if (rate > 37) {
+      setMetric("mOpenRate", "mOpenRateStatus", rate + "%", "Healthy", "status-healthy");
+    } else if (rate < 25) {
+      setMetric("mOpenRate", "mOpenRateStatus", rate + "%", "Needs work", "status-red");
+    } else {
+      setMetric("mOpenRate", "mOpenRateStatus", rate + "%", "Watch", "status-warn");
+    }
+
+    // Sub Growth: red = 0, healthy 5-15%/week, excellent >20%.
+    // Only subscriber count is tracked per session, so growth is derived
+    // from the count itself: zero subs = red, otherwise shown as the count
+    // with guidance bands noted.
+    var subs = session.subscribers;
+    if (subs === 0) {
+      setMetric("mGrowth", "mGrowthStatus", "0", "Stalled — red at 0", "status-red");
+    } else {
+      setMetric("mGrowth", "mGrowthStatus", subs + " subs", "Target 5–15%/wk · >20% excellent", "status-healthy");
+    }
+
+    // Unsub Rate: red >1%, healthy <0.3%. Not captured in the check-in form,
+    // so shown as the healthy target band until tracked.
+    setMetric("mUnsub", "mUnsubStatus", "<0.3%", "Healthy target · red >1%", "status-na");
+
+    // Phase progress bar (Phase 1: 0-50 subs)
+    var pct = Math.max(0, Math.min(100, (subs / 50) * 100));
+    document.getElementById("phaseProgress").style.width = pct + "%";
+    document.getElementById("phaseCount").textContent = subs + " subscriber" + (subs === 1 ? "" : "s");
+  }
+
+  renderDashboard();
+})();
+</script>
+
+</body>
+</html>
