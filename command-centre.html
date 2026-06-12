@@ -323,44 +323,6 @@
     margin-top: 0.5rem;
   }
 
-  /* ---------- API key modal ---------- */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(10, 10, 10, 0.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal-box {
-    background: rgba(26, 26, 26, 0.95);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    padding: 2.75rem;
-    max-width: 460px;
-    width: 100%;
-  }
-
-  .modal-box h2 {
-    color: var(--gold);
-    font-size: 1rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  .modal-box p {
-    color: var(--stone);
-    font-size: 0.82rem;
-    margin-bottom: 1.75rem;
-  }
-
   /* ---------- Footer ---------- */
   footer {
     max-width: 880px;
@@ -386,17 +348,6 @@
 </style>
 </head>
 <body>
-
-<!-- API key modal -->
-<div class="modal-overlay" id="apiKeyModal">
-  <div class="modal-box">
-    <h2>API Key Required</h2>
-    <p>Enter your Anthropic API key to unlock the Command Centre. It is stored only in this browser's localStorage and never sent anywhere except api.anthropic.com.</p>
-    <label for="apiKeyInput">Anthropic API Key</label>
-    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
-    <button class="btn" id="saveApiKeyBtn">Save Key</button>
-  </div>
-</div>
 
 <nav>
   <span class="wordmark">THE STUDENT AI BRIEF</span>
@@ -526,90 +477,13 @@
 
 <footer>
   <span>Command Centre v1 — not for public sharing</span>
-  <button class="btn-ghost" id="changeApiKeyBtn">Change API Key</button>
 </footer>
 
 <script>
 (function () {
   "use strict";
 
-  var API_KEY_STORAGE = "saib_api_key";
   var SESSION_STORAGE = "saib_session";
-  var API_URL = "https://api.anthropic.com/v1/messages";
-
-  /* ---------------- API key handling ---------------- */
-
-  var modal = document.getElementById("apiKeyModal");
-  var apiKeyInput = document.getElementById("apiKeyInput");
-
-  function getApiKey() {
-    return localStorage.getItem(API_KEY_STORAGE) || "";
-  }
-
-  function openKeyModal() {
-    apiKeyInput.value = "";
-    modal.classList.add("open");
-    apiKeyInput.focus();
-  }
-
-  document.getElementById("saveApiKeyBtn").addEventListener("click", function () {
-    var key = apiKeyInput.value.trim();
-    if (!key) {
-      apiKeyInput.focus();
-      return;
-    }
-    localStorage.setItem(API_KEY_STORAGE, key);
-    modal.classList.remove("open");
-  });
-
-  apiKeyInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") document.getElementById("saveApiKeyBtn").click();
-  });
-
-  document.getElementById("changeApiKeyBtn").addEventListener("click", openKeyModal);
-
-  if (!getApiKey()) openKeyModal();
-
-  /* ---------------- Anthropic API call ---------------- */
-
-  function callClaude(systemPrompt, userContent, maxTokens) {
-    var key = getApiKey();
-    if (!key) {
-      openKeyModal();
-      return Promise.reject(new Error("No API key set."));
-    }
-    return fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: maxTokens,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userContent }]
-      })
-    }).then(function (res) {
-      return res.json().then(function (data) {
-        if (!res.ok) {
-          var msg = (data && data.error && data.error.message) || ("HTTP " + res.status);
-          throw new Error(msg);
-        }
-        if (data.stop_reason === "refusal") {
-          throw new Error("The model declined this request.");
-        }
-        var text = "";
-        (data.content || []).forEach(function (block) {
-          if (block.type === "text") text += block.text;
-        });
-        if (!text) throw new Error("Empty response from API.");
-        return text;
-      });
-    });
-  }
 
   /* ---------------- Tab navigation ---------------- */
 
@@ -690,9 +564,7 @@
     "Tasks must match this mix for sub count 0-50: 3x outreach, 1x content, 1x platform setup.";
 
   document.getElementById("generateTasksBtn").addEventListener("click", function () {
-    var btn = this;
     var status = document.getElementById("tasksStatus");
-    var output = document.getElementById("tasksOutput");
     var session = getSession();
 
     if (!session) {
@@ -701,7 +573,8 @@
       return;
     }
 
-    var context =
+    var prompt =
+      TASKS_SYSTEM_PROMPT + "\n\n" +
       "Current session data:\n" +
       "Subscribers: " + session.subscribers + "\n" +
       "Open rate: " + session.openRate + "%\n" +
@@ -710,24 +583,13 @@
       "Blockers: " + (session.blockers || "none") + "\n\n" +
       "Generate today's 5 tasks.";
 
-    btn.disabled = true;
     status.classList.remove("error");
-    status.textContent = "Generating tasks…";
-    output.hidden = true;
-
-    callClaude(TASKS_SYSTEM_PROMPT, context, 1500)
-      .then(function (text) {
-        output.textContent = text;
-        output.hidden = false;
-        status.textContent = "";
-      })
-      .catch(function (err) {
-        status.classList.add("error");
-        status.textContent = "Error: " + err.message;
-      })
-      .then(function () {
-        btn.disabled = false;
-      });
+    navigator.clipboard.writeText(prompt).then(function () {
+      status.textContent = "Prompt copied — Claude is opening in a new tab.";
+      window.open("https://claude.ai", "_blank");
+    }).catch(function () {
+      status.textContent = "Could not copy to clipboard. Please copy manually.";
+    });
   });
 
   /* ---------------- 3. Issue drafter ---------------- */
@@ -751,10 +613,7 @@
     "Label each section clearly in caps. Output plain text only — no markdown formatting.";
 
   document.getElementById("draftIssueBtn").addEventListener("click", function () {
-    var btn = this;
     var status = document.getElementById("drafterStatus");
-    var output = document.getElementById("drafterOutput");
-    var actions = document.getElementById("drafterActions");
     var issueNum = document.getElementById("drIssueNum").value.trim();
     var topic = document.getElementById("drTopic").value.trim();
 
@@ -764,30 +623,17 @@
       return;
     }
 
-    btn.disabled = true;
-    status.classList.remove("error");
-    status.textContent = "Drafting issue " + issueNum + "…";
-    output.hidden = true;
-    actions.hidden = true;
+    var prompt =
+      DRAFTER_SYSTEM_PROMPT + "\n\n" +
+      "Draft issue #" + issueNum + " of The Student AI Brief.\nTopic/focus: " + topic;
 
-    callClaude(
-      DRAFTER_SYSTEM_PROMPT,
-      "Draft issue #" + issueNum + " of The Student AI Brief.\nTopic/focus: " + topic,
-      2000
-    )
-      .then(function (text) {
-        output.textContent = text;
-        output.hidden = false;
-        actions.hidden = false;
-        status.textContent = "";
-      })
-      .catch(function (err) {
-        status.classList.add("error");
-        status.textContent = "Error: " + err.message;
-      })
-      .then(function () {
-        btn.disabled = false;
-      });
+    status.classList.remove("error");
+    navigator.clipboard.writeText(prompt).then(function () {
+      status.textContent = "Prompt copied — Claude is opening in a new tab.";
+      window.open("https://claude.ai", "_blank");
+    }).catch(function () {
+      status.textContent = "Could not copy to clipboard. Please copy manually.";
+    });
   });
 
   document.getElementById("copyDraftBtn").addEventListener("click", function () {
