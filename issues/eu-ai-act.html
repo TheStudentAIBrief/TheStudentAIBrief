@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The EU AI Act just went live: what it actually means for you · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into the EU AI Act: the risk tiers, what is banned, the transparency rules on deepfakes and chatbots, and why the 2026 Digital Omnibus slowed the whole thing down." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="The EU AI Act just went live: what it actually means for you" />
+  <meta property="og:description" content="Risk tiers, banned practices, deepfake labelling, and why the EU just pushed its heaviest rules back to 2027. It still shapes the tools on your laptop." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 06 · Regulation</p>
+      <h1 class="title">The EU wrote the rulebook for <em>artificial intelligence</em></h1>
+      <p class="dek">Europe's AI Act is arriving in stages, and in 2026 the EU quietly pushed its heaviest rules back to 2027. Britain is not bound by any of it, yet the tools on your laptop are. Here is what the law actually says, and where it reaches you.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>8 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Regulation</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">For a decade, the rule on artificial intelligence was that there was no rule. Products shipped, models scaled, and the law watched from the touchline. That era is closing. The <strong>EU Artificial Intelligence Act</strong>, the world's first comprehensive law on AI, entered into force on <strong>1 August 2024</strong> and is arriving in phases, each one switching on a fresh set of obligations. In 2026 those phases were reshuffled: a reform package called the <em>Digital Omnibus</em> pushed the heaviest rules further out, to 2027 and beyond. You are a British student, so the EU does not govern you. Read on anyway, because the companies that make your favourite AI tools very much are governed by it, and they tend to build one product for everyone.</p>
+
+      <p>The Act's core idea is refreshingly simple to grasp. Rather than ask <em>what</em> a system is, it asks <em>how risky</em> its use is, and scales the rules to match. A spam filter and a system that decides who gets a student loan are both "AI", but only one of them can quietly wreck a life, so only one of them carries a heavy compliance burden. Everything flows from that single sorting decision.</p>
+
+      <blockquote>The law does not regulate AI. It regulates what you do with it, and the higher the stakes, the heavier the rules.</blockquote>
+
+      <h2><span class="h2-kicker">How the law sorts the machines</span>Four tiers, one question</h2>
+      <p>Every system in scope is dropped into one of four risk tiers. The tier decides the obligations, from an outright ban at the top to no new rules at all at the bottom. It is worth holding this table in your head, because almost every headline about the Act is really an argument about which tier something belongs in.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>The four risk tiers · EU AI Act</caption>
+          <thead>
+            <tr><th>Tier</th><th>Examples</th><th>What the rules require</th></tr>
+          </thead>
+          <tbody>
+            <tr class="hero-row"><td>Unacceptable</td><td>Social scoring, untargeted face-scraping, emotion detection at work or school</td><td>Banned outright across the EU</td></tr>
+            <tr><td>High</td><td>Biometric ID, medical devices, some hiring and exam or admissions tools</td><td>Certified checks, human oversight, logging, documentation</td></tr>
+            <tr><td>Limited</td><td>Chatbots, deepfakes, AI-generated images and text</td><td>Must be disclosed and labelled as AI</td></tr>
+            <tr><td>Minimal</td><td>Spam filters, recommendation feeds, game AI</td><td>No new legal obligations</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The vast majority of AI you touch daily sits in that bottom tier and is left alone. The Act spends its energy on the two tiers above it, where a wrong output is not an annoyance but a harm.</p>
+
+      <h2><span class="h2-kicker">The lines nobody may cross</span>What is banned outright</h2>
+      <p>The prohibitions are the sharpest part of the law, and they have been in force since <strong>2 February 2025</strong>. These are uses Europe has decided are simply incompatible with fundamental rights, and no amount of paperwork makes them legal. Among the practices now forbidden:</p>
+      <ul class="clean">
+        <li><strong>Social scoring</strong> by public authorities, ranking people by behaviour or personal traits and then treating them worse for it.</li>
+        <li><strong>Untargeted scraping</strong> of facial images from the web or CCTV to build recognition databases.</li>
+        <li><strong>Emotion recognition</strong> in workplaces and educational settings, with narrow exceptions for medical or safety reasons.</li>
+        <li><strong>Biometric categorisation</strong> that infers sensitive attributes such as race, political views, or sexual orientation.</li>
+        <li><strong>Subliminal or manipulative</strong> techniques that materially distort behaviour and cause harm, and systems that exploit the vulnerabilities of age or disability.</li>
+        <li><strong>Real-time remote biometric identification</strong> in public spaces for law enforcement, save for a few tightly drawn exceptions.</li>
+        <li><strong>AI "nudifiers" and CSAM</strong>, a new prohibition added by the 2026 Digital Omnibus, covering systems that generate non-consensual intimate imagery of real people or child sexual abuse material.</li>
+      </ul>
+      <p>That last ban is the newest and, for students, one of the most relevant: the "nudifier" apps that fabricate explicit images of a classmate from an ordinary photo are now squarely prohibited at the model level. The line on emotion recognition in schools is the other one to notice. A university cannot lawfully deploy a system that watches your face in a seminar or an online exam to judge whether you are engaged, bored, or stressed. That is now off the table inside the EU.</p>
+
+      <h2><span class="h2-kicker">When disclosure becomes the rule</span>The right to know it is a machine</h2>
+      <p>This is the tier that touches your rights most directly, and its transparency duties are currently scheduled to apply from <strong>2 August 2026</strong>. The principle is simple: if you are dealing with a machine, or with something a machine made, you are entitled to know. In practice that means three things.</p>
+      <p>First, <strong>chatbots must identify themselves.</strong> A system you converse with has to make clear you are talking to AI, not a person, unless it is obvious. Second, <strong>AI-generated content must be marked</strong>, ideally in a machine-readable way, so platforms and browsers can flag it downstream. Third, and most pointedly, <strong>deepfakes must be labelled.</strong> Synthetic image, audio, or video that depicts real people or events has to be disclosed as artificially generated.</p>
+      <div class="callout">
+        <span class="tag">Why this matters to you</span>
+        <p>The deepfake rule is the closest the Act comes to a personal shield. Image-based abuse and fabricated "revenge" clips hit students and young people hardest. A labelling duty does not stop a bad actor, but it hands platforms and courts a clear legal hook, and it makes "I did not know it was fake" a much weaker excuse.</p>
+      </div>
+
+      <h2><span class="h2-kicker">The models under the models</span>Rules for the engines themselves</h2>
+      <p>ChatGPT, Claude, Gemini and their peers are not built for one job, so the Act gives them their own category: <em>general-purpose AI</em>, or GPAI. Obligations on the companies that make these foundation models have applied since <strong>2 August 2025</strong>. Every GPAI provider has to keep technical documentation, publish a summary of the data used to train the model, and put in place a policy to respect EU copyright law.</p>
+      <p>The largest models carry more. A model trained with more than <strong>10<sup>25</sup> floating-point operations</strong> is presumed to pose "systemic risk", which triggers extra duties: adversarial testing, incident reporting, and cybersecurity safeguards. That compute threshold is the law's rough proxy for "frontier", and it is why the biggest labs are watched more closely than a small open-source project.</p>
+
+      <h2><span class="h2-kicker">The rules arrive slower than written</span>The Digital Omnibus reshuffles the timeline</h2>
+      <p>The single most important development of 2026 is not a rule switching on. It is a rule switching off, or at least sliding into the future. For much of last year, 2 August 2026 was pencilled in as the day the <strong>high-risk</strong> regime would bite: the certified checks and oversight duties on systems such as hiring, admissions, and medical tools. That is no longer the case. A reform package called the <em>Digital Omnibus on AI</em>, proposed in November 2025 and given final sign-off by the Council on <strong>29 June 2026</strong>, is now law, and it pushes those deadlines back.</p>
+      <p>Under the finalised Omnibus, the main high-risk obligations for stand-alone systems move from August 2026 to <strong>2 December 2027</strong>, and for AI built into already-regulated products to <strong>2 August 2028</strong>. Brussels framed it as simplification and breathing room; critics called it a rollback under industry pressure. Either way, the headline effect is clear: the Act is arriving more slowly than it was first written.</p>
+      <p>The useful way to hold all of this is as a phased timeline, not a single switch: the bans came first, the rules for the model-makers followed, and the heaviest obligations come last, with 2026 nudging that last step further out.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>The phased timeline · as amended in 2026</caption>
+          <thead>
+            <tr><th>Date</th><th>What applies</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">1 Aug 2024</td><td>The Act enters into force</td></tr>
+            <tr class="hero-row"><td class="num">2 Feb 2025</td><td>Prohibited practices become enforceable</td></tr>
+            <tr><td class="num">2 Aug 2025</td><td>General-purpose AI model obligations apply</td></tr>
+            <tr><td class="num">2 Aug 2026</td><td>Transparency duties scheduled to apply</td></tr>
+            <tr><td class="num">2 Dec 2027</td><td>High-risk rules (stand-alone systems), deferred by the Omnibus</td></tr>
+            <tr><td class="num">2 Aug 2028</td><td>High-risk rules for AI inside regulated products</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>None of this softens the enforcement teeth. Once a duty is in force, breaching it is expensive, and the fines are pegged to a company's <em>global</em> turnover so that the numbers stay frightening even for the largest firms.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val down">7%</div>
+          <div class="lbl">Of global annual turnover, or €35m, whichever is higher: the ceiling for banned practices</div>
+        </div>
+        <div class="stat">
+          <div class="val">3%</div>
+          <div class="lbl">Of global turnover, or €15m, the cap for GPAI and most other breaches</div>
+        </div>
+        <div class="stat">
+          <div class="val up">2 Dec</div>
+          <div class="lbl">2027: the deferred date the high-risk rules are now due to bite</div>
+        </div>
+        <div class="stat">
+          <div class="val">10²⁵</div>
+          <div class="lbl">FLOPs, the compute threshold above which a model counts as systemic risk</div>
+        </div>
+      </div>
+      <p>So if you see a confident claim that "the whole Act lands in August 2026", treat it as out of date. The prohibitions and the model-maker rules are already live. The rest is real, but it is now a slower, staggered rollout stretching into 2028.</p>
+
+      <h2><span class="h2-kicker">Not in the EU, still in scope</span>Why a British student should care</h2>
+      <p>The UK has taken a pointedly different road. There is no British AI Act, and as of mid-2026 no equivalent Bill before Parliament. The government's stance is "pro-innovation": rather than one horizontal law, it asks existing regulators such as the ICO, Ofcom, and the FCA to apply five broad principles (safety, transparency, fairness, accountability, and contestability) within their own patches. Lighter touch, by design.</p>
+      <p>Two things follow for you. The first is the <em>Brussels effect</em>: it is expensive to build a labelled, disclosed, documented product for Europe and a separate unlabelled one for everyone else, so the strict standard tends to leak outwards and become the global default. When your AI tools start announcing themselves and tagging their outputs, thank the EU. The second is that the Act is now the reference text the whole world argues with, including a future UK government. Understanding it is understanding where the rules for your working life are heading, whichever side of the Channel writes them.</p>
+
+      <h2><span class="h2-kicker">The takeaway</span>The mental model to keep</h2>
+      <p>Strip away the acronyms and the Act is one clean idea executed at scale: sort every use of AI by how much damage it can do, ban the worst, licence the dangerous, label the deceptive, and leave the harmless alone. The banned list and the labelling rules are live now. The heavy obligations on high-stakes systems are coming, a little later than first planned. And even outside the EU, the tools you use every day are quietly being reshaped to fit.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener">Regulatory framework on AI</a> <span>·European Commission, official overview &amp; timeline</span></li>
+      <li><a href="https://artificialintelligenceact.eu/high-level-summary/" target="_blank" rel="noopener">High-level summary of the AI Act</a> <span>·risk tiers, GPAI &amp; obligations</span></li>
+      <li><a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-5" target="_blank" rel="noopener">Article 5: Prohibited AI practices</a> <span>·EU AI Act Service Desk (official)</span></li>
+      <li><a href="https://www.consilium.europa.eu/en/press/press-releases/2026/06/29/artificial-intelligence-council-gives-final-green-light-to-simplify-and-streamline-rules/" target="_blank" rel="noopener">Council gives final green light to simplify AI rules</a> <span>·Council of the EU, 29 June 2026 (Digital Omnibus)</span></li>
+      <li><a href="https://www.gibsondunn.com/eu-ai-act-omnibus-agreement-postponed-high-risk-deadlines-and-other-key-changes/" target="_blank" rel="noopener">EU AI Act Omnibus Agreement: Postponed High-Risk Deadlines</a> <span>·Gibson Dunn, deferral analysis</span></li>
+      <li><a href="https://www.legiscope.com/blog/eu-ai-act-timeline-deadlines.html" target="_blank" rel="noopener">EU AI Act Deadlines 2026-2027: Compliance Calendar &amp; Fines</a> <span>·phased dates and penalty tiers</span></li>
+      <li><a href="https://bratby.law/uk-ai-regulation-what-the-law-says/" target="_blank" rel="noopener">Is There a UK AI Act? UK AI Regulation in 2026</a> <span>·the UK pro-innovation contrast</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Explainer only. Nothing here is legal advice. Dates and thresholds reflect the law as reported in July 2026 and may change.</p>
+  </footer>
+
+  <script>
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

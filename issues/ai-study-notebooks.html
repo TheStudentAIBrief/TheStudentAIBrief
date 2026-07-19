@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turn your lectures into a tutor · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into NotebookLM and Gemini study notebooks: how to turn your own lecture PDFs, slides and readings into a tutor that quizzes you back." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Turn your own lectures into a tutor" />
+  <meta property="og:description" content="NotebookLM and Gemini study notebooks ground their answers in the notes you upload. Here is how to revise from them, and where they still slip." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── TERMINAL CHART ── */
+    figure.terminal {
+      margin: 44px 0 8px;
+      background: #070707;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.08em;
+    }
+    .terminal-bar .sym { color: var(--gold); font-weight: 500; letter-spacing: 0.14em; }
+    .terminal-bar .live { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--bull); }
+    .terminal-bar .live::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--bull);
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(79,178,134,0.5); }
+      70% { box-shadow: 0 0 0 7px rgba(79,178,134,0); }
+      100% { box-shadow: 0 0 0 0 rgba(79,178,134,0); }
+    }
+    canvas#chart { display: block; width: 100%; height: 320px; }
+    figcaption {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      letter-spacing: 0.02em; line-height: 1.6; padding: 14px 2px 0;
+    }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      canvas#chart { height: 240px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 03 · Study Tools</p>
+      <h1 class="title">Turn your own lectures into <em>a tutor</em></h1>
+      <p class="dek">Two Google tools now read only the notes you feed them: NotebookLM and Gemini study notebooks. Point them at your slides and readings and you get citations, a podcast, and a quiz that adapts to what you keep getting wrong.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>6 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Study Tools</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">Most revision advice quietly assumes you have already done the hard part: condensed a term of lectures into something you can actually test yourself on. That is the bit almost nobody finishes. A generic chatbot does not help much here, because it answers from the whole internet, confidently and often wrongly, with no idea what your lecturer actually said. The interesting shift in 2026 is a pair of tools that do the opposite. They read <strong>only</strong> the material you give them, and they hand the work of turning it into revision back to you in a form you can practise from.</p>
+
+      <p>The two worth knowing are <strong>NotebookLM</strong> and <strong>Gemini study notebooks</strong>, both from Google and both built on its Gemini models. They overlap, but they solve different halves of the same problem: one turns your sources into study assets, the other turns them into a tutor that quizzes you. Used well, together they close the gap between a folder of PDFs and a revision plan.</p>
+
+      <blockquote>The point is not to read your notes back to you. It is to make you retrieve them, which is the one thing that actually moves information into memory.</blockquote>
+
+      <h2><span class="h2-kicker">The grounded notebook</span>An assistant that only reads your sources</h2>
+      <p>NotebookLM starts empty. You upload sources: lecture PDFs, slide decks, a reading list, your own messy notes, even a YouTube lecture or a pasted transcript. Everything it then says is <strong>grounded</strong> in those documents and nothing else. Technically it uses retrieval-augmented generation, which means it fetches the relevant passages from your uploads before answering rather than reaching for whatever it half-remembers from training.</p>
+      <p>The practical payoff is citations you can check. Every answer carries small numbered chips, and clicking one opens the source document scrolled to the exact passage, with the sentence it drew on highlighted. That single feature changes how you can trust it: instead of wondering whether a claim is real, you verify it in seconds against the paragraph in your own lecture notes. Ask it "what did week 7 say about elasticity", and it answers from week 7, footnoted.</p>
+
+      <h2><span class="h2-kicker">From reading to listening</span>Podcasts, mind maps and flashcards from your PDFs</h2>
+      <p>The feature that made NotebookLM briefly famous is the <em>Audio Overview</em>: it generates a surprisingly natural podcast-style discussion between two AI voices talking through your material, available in <strong>80+ languages</strong> and in formats from a quick brief to a longer deep dive. For a dense topic you half-understand, hearing it argued out loud on the walk to campus is a genuinely different way in.</p>
+      <p>The rest of the Studio panel is arguably more useful for exams. From the same uploads it will generate:</p>
+      <ul class="clean">
+        <li><strong>Mind maps</strong> that lay out how the concepts in your sources connect, which is often where revision clarity actually comes from.</li>
+        <li><strong>Flashcards and quizzes</strong> built directly from your material, so the questions are about your syllabus rather than a generic version of the topic.</li>
+        <li><strong>Study guides, timelines and briefing docs</strong> that compress a reading list into something skimmable before a seminar.</li>
+      </ul>
+      <p>The mental model: NotebookLM is a machine for converting passive sources into things you can be tested by.</p>
+
+      <h2><span class="h2-kicker">The tutor that quizzes back</span>Study notebooks and Guided Learning</h2>
+      <p>Gemini's <strong>study notebooks</strong>, rolling out through 2026, take a further step. You upload your syllabus and notes, and instead of producing assets, the app sets a short <strong>diagnostic quiz</strong> to find your weak spots. From your results it builds a plan of bite-sized lessons, each with its own practice quiz, and a dashboard that sorts more than <strong>100 learning objectives</strong> into strengths, focus areas and not-yet-started. As you answer, the plan recalibrates: get something right and it moves on, get it wrong and it circles back.</p>
+      <p>Underneath sits <strong>Guided Learning</strong>, the mode Google launched in the Gemini app in September 2025. Rather than handing over a finished answer, it walks you through a problem step by step, asking questions and checking you have followed before moving on. Google's own framing is blunt about why:</p>
+      <div class="callout">
+        <span class="tag">Google's stated aim</span>
+        <p>"The idea is to help you learn, not just provide the answer. Knowing how to arrive at an answer is more critical than the answer itself." Standardised-test prep (SAT now, with ACT, GRE and others due in summer 2026) and richer diagrams are on the same roadmap.</p>
+      </div>
+
+      <h2><span class="h2-kicker">Why testing beats rereading</span>The learning science underneath</h2>
+      <p>None of this is magic. It works, when it works, because it nudges you into two techniques cognitive scientists have backed for decades: <em>active recall</em> (retrieving an answer from memory rather than rereading it) and <em>spaced repetition</em> (revisiting material at growing intervals). Rereading feels productive because the words look familiar. Familiarity is not memory, and that gap is exactly where students overestimate how ready they are.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val up">~80%</div>
+          <div class="lbl">Recalled a week later after repeated retrieval practice, in Karpicke and Roediger's 2008 study</div>
+        </div>
+        <div class="stat">
+          <div class="val down">~36%</div>
+          <div class="lbl">Recalled by the group that only restudied the same material, same study</div>
+        </div>
+        <div class="stat">
+          <div class="val">g = 0.50</div>
+          <div class="lbl">Mean benefit of retrieval practice over restudy across 159 comparisons (Rowland, 2014)</div>
+        </div>
+        <div class="stat">
+          <div class="val">g = 0.61</div>
+          <div class="lbl">Benefit of practice testing over other methods in a later meta-analysis (Adesope et al., 2017)</div>
+        </div>
+      </div>
+      <p>Those are large, replicated effects. A quiz drawn from your own lecture forces retrieval; a podcast that talks the concept through, then asks you to recall it later, spaces the repetition. The tools are useful mainly to the degree they get you doing these two things, not because the AI is clever.</p>
+
+      <h2><span class="h2-kicker">Turning a lecture into revision</span>A workflow that actually holds</h2>
+      <p>A concrete loop that fits a single module:</p>
+      <div class="table-scroll">
+        <table>
+          <caption>One module, one week</caption>
+          <thead>
+            <tr><th>Step</th><th>Tool</th><th>What you get</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Dump the sources</td><td>NotebookLM</td><td>Slides, readings and notes in one grounded notebook</td></tr>
+            <tr><td>Map it</td><td>NotebookLM</td><td>A mind map plus a study guide to see the shape</td></tr>
+            <tr class="hero-row"><td>Test yourself</td><td>NotebookLM</td><td>Flashcards and a quiz from your own material</td></tr>
+            <tr><td>Fix weak spots</td><td>Study notebook</td><td>Diagnostic quiz, then adaptive lessons on the gaps</td></tr>
+            <tr><td>Revise on the move</td><td>Audio Overview</td><td>A podcast of the week to re-listen to before class</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The order matters. Generate assets first, then spend most of your time being tested by them. The temptation is to stop at the shiny podcast, which feels like studying but is still passive.</p>
+
+      <h2><span class="h2-kicker">Read before you rely</span>The honest caveats</h2>
+      <p>Grounded does not mean infallible, and it is worth being blunt about the limits:</p>
+      <ul class="clean">
+        <li><strong>Grounded still hallucinates.</strong> Tying a model to your sources sharply reduces invented facts, but it does not remove them. It can still misread a table, merge two ideas, or cite the wrong passage. The citations exist so you check, so check.</li>
+        <li><strong>Over-reliance quietly costs you.</strong> The whole benefit is retrieval. If the tool does the recalling for you, you get the feeling of learning without the effect. Let it set the questions, but answer them yourself before you peek.</li>
+        <li><strong>Your uploads are only as good as your notes.</strong> Feed it a half-finished slide deck and you get a confident summary of a half-finished slide deck.</li>
+        <li><strong>Check your university's rules.</strong> Policies on AI vary by department and by assessment, and uploading some materials may touch copyright or data terms. What is fine for revision may not be fine for coursework. Confirm before you rely on it near anything graded.</li>
+      </ul>
+
+      <h2><span class="h2-kicker">The takeaway</span>The mental model to keep</h2>
+      <p>Think of these tools as a way to shorten the distance between raw material and self-testing, not as a shortcut around the testing itself. NotebookLM turns your sources into things that can quiz you; Gemini study notebooks turn your weak spots into a plan; and the reason either helps is the oldest finding in the study-skills literature, that retrieving beats rereading. The AI is the assistant. The recall still has to be yours.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://blog.google/innovation-and-ai/products/gemini-app/gemini-study-notebooks/" target="_blank" rel="noopener">5 ways to learn with study notebooks in the Gemini app</a> <span>·Google, study notebooks announcement</span></li>
+      <li><a href="https://blog.google/products/gemini/guided-learning-google-gemini/" target="_blank" rel="noopener">Guided Learning in the Gemini app</a> <span>·Google, Guided Learning launch</span></li>
+      <li><a href="https://notebooklm.google/students" target="_blank" rel="noopener">NotebookLM for students</a> <span>·Google, features overview</span></li>
+      <li><a href="https://support.google.com/notebooklm/answer/16212820?hl=en" target="_blank" rel="noopener">Generate an Audio Overview</a> <span>·NotebookLM Help, formats &amp; languages</span></li>
+      <li><a href="https://files.eric.ed.gov/fulltext/ED599273.pdf" target="_blank" rel="noopener">Retrieval-Based Learning: A Decade of Progress</a> <span>·Karpicke, retrieval-practice evidence</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Explainer only. AI tools can be wrong even when grounded in your sources: verify against the original, and check your university's rules before relying on them near assessed work.</p>
+  </footer>
+
+  <script>
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

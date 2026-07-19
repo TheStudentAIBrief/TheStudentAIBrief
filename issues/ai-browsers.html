@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic browsers: the AI that clicks for you · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into agentic browsers: the AI browsers that navigate, fill forms and buy things for you, and the prompt-injection risk that comes with them." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Agentic browsers: the AI that clicks for you" />
+  <meta property="og:description" content="Chrome, Comet and Claude now browse on your behalf. Here is what that unlocks for students, and the trapdoor hidden in every web page." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 02 · Agentic Browsers</p>
+      <h1 class="title">The browser that <em>clicks for you</em></h1>
+      <p class="dek">Chrome, Comet and Claude can now navigate websites, fill in forms and buy things on your behalf. That is a real shortcut through uni admin, and a brand-new way to get robbed. Here is the balance.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>6 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Deep Dive series</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">For thirty years a web browser did exactly one thing: it showed you a page and waited for you to act. You read, you clicked, you typed. The browser never touched the controls. That assumption quietly broke this year. The browser now reads the page <em>for</em> you, decides what to click, and clicks it. This new species has a name, the <strong>agentic browser</strong>, and by mid-2026 the three biggest names in software have all shipped one.</p>
+
+      <p>An agentic browser is an ordinary browser with an AI agent wired into the driving seat. You give it a goal in plain English, "find me the cheapest train to Manchester next Friday and hold a seat", and it opens tabs, reads results, fills boxes and presses buttons until the job is done. The interesting questions are no longer whether this works. It works. The questions are what it is genuinely good for, and what happens when a web page it visits turns out to be lying to it.</p>
+
+      <h2><span class="h2-kicker">What just arrived</span>The browsers that now act for you</h2>
+      <p>The clearest signal that this went mainstream: on <strong>28 January 2026</strong>, Google added an agentic mode called <strong>auto browse</strong> to Chrome, powered by its <strong>Gemini 3</strong> model. It rolled out as a preview to Google AI Pro and AI Ultra subscribers in the US, and it will happily book hotels, fill out forms from a PDF, collect tax documents, chase quotes from tradespeople and renew licences. Crucially, Google built in a brake: auto browse is designed to <em>pause and ask for confirmation</em> before it does anything hard to undo, such as making a purchase or posting on your behalf.</p>
+      <p>Chrome was not first. <strong>Perplexity's Comet</strong>, a Chromium browser with an agent living in the sidebar, reached desktop in 2025 and completed its run to iOS in March 2026. It reads the tab you are on, holds context across a session, and can compare products or complete a booking without you. <strong>Anthropic's Claude for Chrome</strong>, an extension that turns Claude into both a page-reading sidebar and an agent that clicks and types across tabs, moved into beta for paid subscribers over the same window. Three approaches, one idea: the model has hands now.</p>
+
+      <h2><span class="h2-kicker">Under the bonnet</span>The plumbing that made it viable</h2>
+      <p>None of this appeared from nowhere. For years the unglamorous groundwork was being laid by tools most students have never heard of. Underneath almost every browser agent sits <strong>Playwright</strong> (and its older sibling Puppeteer), the open-source libraries that let code drive a real Chrome instance: click this element, type into that field, wait for the page to load.</p>
+      <p>On top of that sit the newer companies that rent out browsers by the thousand. <strong>Browserbase</strong> runs fleets of cloud Chrome sessions on demand, used by the likes of Perplexity and Vercel, and ships an open framework called <strong>Stagehand</strong> for AI-driven automation. <strong>Steel</strong> offers an open-source browser API built specifically for agents, and the popular <strong>browser-use</strong> project glues a language model to Playwright in a few lines of Python. The pattern that turned a research demo into a shipping product was boring but decisive: give the model a reliable, disposable browser it can poke at, and a safe way to see what happened.</p>
+
+      <blockquote>The browser stopped being a window you look through. It became a hand you point at the web.</blockquote>
+
+      <h2><span class="h2-kicker">The student case</span>Where it genuinely helps</h2>
+      <p>Strip away the hype and there is a real, dull, valuable core here, and university life is full of exactly the tasks these agents handle best: repetitive, form-heavy, spread across too many tabs. Sensible uses:</p>
+      <ul class="clean">
+        <li><strong>Research triage.</strong> Ask it to open ten sources on a topic, pull the key claims and hand you a cited summary with the links, so you decide what to actually read rather than opening thirty tabs yourself.</li>
+        <li><strong>Form-filling.</strong> Student finance renewals, accommodation applications, society sign-ups and society AGM RSVPs are mostly the same details typed into different boxes. An agent reading from one document and filling the rest is a real time saver.</li>
+        <li><strong>Comparison.</strong> Cheapest railcard, best-value laptop within a budget, which library has the textbook in stock: tasks that mean visiting several sites and holding numbers in your head.</li>
+        <li><strong>Admin chasing.</strong> Checking a portal for exam timetables, deadline changes or whether a payment landed, the low-stakes lookups that eat an afternoon.</li>
+      </ul>
+      <div class="callout">
+        <span class="tag">The rule of thumb</span>
+        <p>Let an agent do anything that is <strong>tedious and reversible</strong>, and keep it away from anything <strong>irreversible or private</strong>. Booking a library room is reversible. Paying a deposit, sending an email from your account, or logging into your bank is not. That line is the whole game.</p>
+      </div>
+
+      <h2><span class="h2-kicker">The trapdoor</span>How a web page can hijack your agent</h2>
+      <p>Here is the part the marketing skips. A traditional browser never trusted a web page to give it <em>orders</em>, only content to display. An agentic browser reads the page as instructions to interpret, and that is a genuinely new attack surface. It is called <strong>indirect prompt injection</strong>: a malicious page hides commands where you will never see them, in white text on a white background, inside HTML comments, in an image caption or a tab title, and your agent reads them as if they came from you.</p>
+      <p>The attacks are not theoretical. Palo Alto's Unit 42 has documented injections in the wild that made agents like Comet perform sensitive cross-site actions when simply asked to summarise a page. Google reported a <strong>32% rise in malicious pages</strong> of this kind between November 2025 and February 2026, measured across billions of crawled pages a month. And in a case that made the pattern concrete, researchers found a flaw nicknamed <strong>ShadowPrompt</strong> in Anthropic's Claude Chrome extension: chained together, an over-permissive origin rule and a cross-site scripting bug let <em>any</em> website silently inject prompts into a user's Claude session. Anthropic patched it in extension version 1.0.41 after disclosure in late December 2025, but the lesson stands.</p>
+      <p>The vendors are measuring the problem honestly, which is the encouraging part. Anthropic's own red-team numbers show how much work this takes:</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val down">23.6%</div>
+          <div class="lbl">Prompt-injection attacks that succeeded against Claude in Chrome before mitigations, across 123 test cases</div>
+        </div>
+        <div class="stat">
+          <div class="val up">0%</div>
+          <div class="lbl">Success rate on browser-specific attacks after mitigations, down from 35.7%</div>
+        </div>
+        <div class="stat">
+          <div class="val down">+32%</div>
+          <div class="lbl">Rise in malicious injection pages online, Nov 2025 to Feb 2026, per Google</div>
+        </div>
+        <div class="stat">
+          <div class="val">1%</div>
+          <div class="lbl">Best current attack success rate against Claude Opus 4.5, still described as meaningful risk</div>
+        </div>
+      </div>
+      <p>Read those last two together. Defences have gone from letting one attack in three through to stopping almost all of them, and that is real progress. But <em>almost</em> is the operative word. As Anthropic puts it plainly, no browser agent is immune to prompt injection, and a one-in-a-hundred failure rate is still a live risk when the agent has access to your inbox or your card.</p>
+
+      <h2><span class="h2-kicker">Staying safe</span>Rules for letting an agent loose</h2>
+      <p>You do not need to avoid these tools. You need to use them the way you would lend your laptop to a clever but gullible friend. A short checklist:</p>
+      <ul class="clean">
+        <li><strong>Never sign it into your bank or primary email.</strong> The worst outcomes almost all involve an agent with access to money or messages being talked into using it. If it cannot reach your bank, a hijacked page cannot drain it.</li>
+        <li><strong>Keep confirmation gates on.</strong> Chrome's auto browse pauses before purchases and posts by design. Leave that on. If a tool lets an agent buy or send without asking, that is a reason to distrust it, not a convenience.</li>
+        <li><strong>Prefer read-only tasks.</strong> Summarising, comparing and researching are far safer than acting. The more an agent can only look and report, the smaller the blast radius when something goes wrong.</li>
+        <li><strong>Watch what it does.</strong> These agents narrate their steps. Skim the actions before you approve them, especially anything involving a login, a payment field or an unfamiliar site.</li>
+      </ul>
+
+      <h2><span class="h2-kicker">The takeaway</span>How to think about it</h2>
+      <p>The agentic browser is the first genuinely new thing to happen to the browser in a decade, and the market clearly believes it: Chrome, Perplexity and Anthropic do not all ship the same feature in the same six months by accident. For a student drowning in portals and forms, that is real leverage, the boring admin of university life handed to something that does not mind doing it.</p>
+      <p>But the same property that makes it useful, that it treats the open web as instructions to follow, is exactly what makes it dangerous. A calculator cannot be tricked by the numbers you feed it. An agent can be tricked by the page it reads. Hold both ideas at once: let it do the tedious, reversible work, keep it away from your money and your identity, and never forget that every page it visits is a page that might be talking to it instead of to you.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://blog.google/products-and-platforms/products/chrome/gemini-3-auto-browse/" target="_blank" rel="noopener">Chrome gets new Gemini 3 features, including auto browse</a> <span>·Google · the 28 Jan 2026 launch</span></li>
+      <li><a href="https://claude.com/blog/claude-for-chrome" target="_blank" rel="noopener">Piloting Claude in Chrome</a> <span>·Anthropic · red-team attack numbers</span></li>
+      <li><a href="https://www.anthropic.com/research/prompt-injection-defenses" target="_blank" rel="noopener">Mitigating the risk of prompt injections in browser use</a> <span>·Anthropic · defences &amp; the 1% figure</span></li>
+      <li><a href="https://unit42.paloaltonetworks.com/ai-agent-prompt-injection/" target="_blank" rel="noopener">Web-Based Indirect Prompt Injection Observed in the Wild</a> <span>·Palo Alto Unit 42 · real attacks</span></li>
+      <li><a href="https://thehackernews.com/2026/03/claude-extension-flaw-enabled-zero.html" target="_blank" rel="noopener">Claude Extension Flaw Enabled Zero-Click XSS Prompt Injection</a> <span>·The Hacker News · ShadowPrompt</span></li>
+      <li><a href="https://blog.google/security/prompt-injections-web/" target="_blank" rel="noopener">The current state of prompt injections on the web</a> <span>·Google Security · the +32% rise</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Explainer only. Nothing here is security advice. Agentic browsers are new and evolving; check each tool's current safeguards before trusting it with anything private.</p>
+  </footer>
+
+  <script>
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

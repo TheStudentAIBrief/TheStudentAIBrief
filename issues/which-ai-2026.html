@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Which AI should you actually use in 2026? · The Student AI Brief</title>
+  <meta name="description" content="An even-handed, sourced guide to GPT-5.6, Claude Sonnet 5, Gemini 3.5 Flash and Grok 4.5, matched to the real jobs a degree throws at you." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Which AI should you actually use in 2026?" />
+  <meta property="og:description" content="A plain, unsponsored decision guide to the current frontier: essays, coding, research, everyday questions, free tiers and privacy." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ARTICLE HERO */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ARTICLE BODY */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* END / SOURCES */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 04 · Model Landscape</p>
+      <h1 class="title">Which AI should you <em>actually use</em>?</h1>
+      <p class="dek">The frontier moved three times in a single fortnight this summer. Here is a plain, unsponsored guide to which assistant earns its place for essays, coding, reading, and the everyday questions a degree throws at you.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>8 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Not sponsored</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">Something strange happened this summer. Inside a single fortnight, three of the four big AI labs shipped a new flagship, and the fourth quietly changed what its app runs by default. If you opened ChatGPT, Claude, Gemini or Grok in early July and felt the ground move under you, you were not imagining it. The question every student actually asks, though, is far simpler than the release notes: for the thing in front of me tonight, which one should I open?</p>
+
+      <p>This guide answers that. It takes no free credits, it is not sponsored, and it will be out of date the moment another model ships, which could genuinely be next week. So treat the version numbers below as a snapshot dated 19 July 2026, and treat the <em>shape</em> of the advice, matching the tool to the job, as the part built to last.</p>
+
+      <blockquote>There is no single best AI any more. There is only the best AI for the specific thing you are doing in the next ten minutes.</blockquote>
+
+      <h2><span class="h2-kicker">Who is on the table</span>The four you will actually meet</h2>
+      <p>For a UK student, four products cover almost everything: OpenAI's <strong>ChatGPT</strong>, Anthropic's <strong>Claude</strong>, Google's <strong>Gemini</strong>, and xAI's <strong>Grok</strong>. Each lab now ships a family of models rather than one, and the naming is a mess, so here is where each one actually stands right now.</p>
+      <ul class="clean">
+        <li><strong>ChatGPT (OpenAI).</strong> GPT-5.6 arrived on 9 July 2026 as a three-model family: Luna for speed, Terra for balance, and Sol for the hardest reasoning. In the app, everyday chat still defaults to the older GPT-5.5 Instant, with Sol's deep reasoning reserved mostly for paid plans.</li>
+        <li><strong>Claude (Anthropic).</strong> Claude Sonnet 5 became the default for free and paid users on 30 June 2026, tuned to run agents cheaply. Above it sit Opus 4.8 and, for polished prose, the premium Fable 5.</li>
+        <li><strong>Gemini (Google).</strong> Gemini 3.5 Flash, launched at Google I/O in May, is now the free default in the Gemini app and in Search. The heavier Gemini 3.5 Pro was still being tuned for coding as of mid-July, so Flash is the model most people meet.</li>
+        <li><strong>Grok (xAI).</strong> Grok 4.5, released 8 July 2026, is pitched as an "Opus-class" model for coding and agentic work, wired directly into live posts on X and the open web.</li>
+      </ul>
+
+      <h2><span class="h2-kicker">The essay workload</span>Writing, drafting and reading</h2>
+      <p>Claude has a long-standing reputation for prose that reads like a person wrote it, and Anthropic leaned into that on 2 July by shipping <strong>Fable 5</strong>, a model in a new "Mythos" tier aimed squarely at writing. In one blind, ranked creative-writing test of 64 outputs, Fable 5 was judged to beat GPT-5.6 Sol across every genre pairing. The catch for students: Fable 5 is a premium, paid model, and even its own reviewers note it produces a more polished draft while flattening <em>your</em> voice unless you feed it a sample to imitate.</p>
+      <p>For the everyday reality of a 2,000-word essay, the free defaults are already strong. Claude Sonnet 5 and GPT-5.6 both draft, restructure and tighten arguments well, and Gemini is fine for a quick outline. Where the newer models genuinely help is <em>reading</em>: large context windows let you paste a full reading list or a dense PDF and ask real questions of it. Grok 4.5 takes a 500,000-token context, and Claude and Gemini both handle very long documents comfortably.</p>
+      <p>One blunt caution, because this newsletter is read by students: do not hand in text a model wrote. Every UK university now treats undisclosed AI-written work as misconduct. Use these tools for structure, counter-arguments and feedback on <em>your</em> draft, and keep your own words on the page.</p>
+
+      <h2><span class="h2-kicker">When the answer must run</span>Coding and hard problems</h2>
+      <p>This is the category where the differences are largest, and where the marketing is loudest, so it pays to look at the numbers rather than the adjectives. On SWE-bench Pro, a benchmark of real software-engineering tasks, Claude Sonnet 5 scores <strong>63.2%</strong> and the premium Fable 5 reaches <strong>80.3%</strong>, per Anthropic's own figures. Grok 4.5 is ranked <strong>fourth of 168 models</strong> on the independent Artificial Analysis Intelligence Index and first on agentic tool use. Google reports Gemini 3.5 Flash at 76.2% on Terminal-Bench 2.1, and OpenAI positions GPT-5.6 Sol as state of the art for coding.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val">63.2%</div>
+          <div class="lbl">Claude Sonnet 5 on SWE-bench Pro (Anthropic figures)</div>
+        </div>
+        <div class="stat">
+          <div class="val up">80.3%</div>
+          <div class="lbl">Premium Fable 5 on SWE-bench Pro (Anthropic figures)</div>
+        </div>
+        <div class="stat">
+          <div class="val">#4 / 168</div>
+          <div class="lbl">Grok 4.5 rank on the Artificial Analysis Intelligence Index</div>
+        </div>
+        <div class="stat">
+          <div class="val">76.2%</div>
+          <div class="lbl">Gemini 3.5 Flash on Terminal-Bench 2.1 (Google figures)</div>
+        </div>
+      </div>
+      <p>The honest reading of that spread: for a first-year problem sheet or a personal project, every free default is more than good enough. The gaps only bite at the hard edge, a stubborn bug, a large refactor, an agent that must chain many steps, which is where a paid model such as Fable 5, Opus 4.8 or Grok 4.5 earns its keep. Benchmarks are also vendor-run and shift monthly, so treat any single number as a hint, not a verdict.</p>
+
+      <h2><span class="h2-kicker">The quick lookup</span>Everyday questions and speed</h2>
+      <p>Most AI use is not an essay or a codebase. It is a fast question between lectures. Here speed and current information matter more than raw intelligence. Gemini 3.5 Flash is built for exactly this: Google claims it runs roughly <strong>four times faster</strong> than other frontier models, and its tie-in with Google Search makes it a sensible pick for facts that change. Grok's live connection to X makes it strong for genuinely breaking events, with the usual caveat that a live feed is not a fact-checked one. GPT-5.5 Instant and Claude Sonnet 5 both answer quickly and clearly for the general case.</p>
+      <p>Whichever you use, treat confident answers with suspicion. All of these models still invent citations, dates and quotes, so anything you will be marked on needs a second source before you trust it.</p>
+
+      <h2><span class="h2-kicker">Side by side</span>The short version</h2>
+      <p>If you remember nothing else, this table is the take-away. It maps each product to the job it does best, what its free tier gives you, and the one thing worth knowing.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>Current frontier for a student · snapshot 19 July 2026</caption>
+          <thead>
+            <tr><th>Model</th><th>Best for</th><th>Free tier</th><th>Worth knowing</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ChatGPT (GPT-5.6 / 5.5)</td>
+              <td>All-round default, everyday writing</td>
+              <td>Yes, capped; drops to a smaller model at the limit</td>
+              <td>App still defaults to GPT-5.5 Instant; Sol reasoning is mostly paid</td>
+            </tr>
+            <tr>
+              <td>Claude (Sonnet 5)</td>
+              <td>Writing, coding, long documents</td>
+              <td>Yes, Sonnet 5 with usage limits</td>
+              <td>Fable 5 tops creative writing; Opus 4.8 sits mid-tier, both paid</td>
+            </tr>
+            <tr>
+              <td>Gemini (3.5 Flash)</td>
+              <td>Speed, current facts, Google tie-in</td>
+              <td>Yes, free globally in the app</td>
+              <td>3.5 Pro was still being tuned for coding in mid-July</td>
+            </tr>
+            <tr>
+              <td>Grok (4.5)</td>
+              <td>Coding, agents, live events on X</td>
+              <td>Limited free access via X</td>
+              <td>500K-token context; a live feed is not a fact-checked one</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="h2-kicker">The price of free</span>Free tiers and privacy</h2>
+      <p>All four have a genuinely useful free tier, which is the good news. The less obvious news is what "free" can cost. On consumer plans, your conversations are often used to train the next model unless you say no. Anthropic is unusually clear about it: for Claude Free, Pro and Max, your chats may be used to improve Claude <em>if you allow it</em>, and if you do, that data can be retained for up to five years. The setting to switch it off lives in your account, and similar toggles exist across the other apps.</p>
+      <p>The student-deal landscape has also tightened. Google's twelve-month free Google AI Pro offer for students has now closed, with the final United States redemption window having expired on 30 April 2026; a one-month trial and a discounted student rate remain. The practical rule is the same everywhere: turn off model training in settings, and never paste anything into a free chatbot you would not be happy for a stranger to read, including personal data, unpublished research, or anything from an exam.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val up">£0</div>
+          <div class="lbl">Every major assistant has a genuinely useful free tier</div>
+        </div>
+        <div class="stat">
+          <div class="val">5 yr</div>
+          <div class="lbl">How long Anthropic may retain consumer chats you allow for training</div>
+        </div>
+      </div>
+
+      <h2><span class="h2-kicker">A rule of thumb</span>How to actually choose</h2>
+      <p>You do not need a spreadsheet. You need a default and one escape hatch.</p>
+      <div class="callout">
+        <span class="tag">The rule of thumb</span>
+        <p>Default to the <strong>free model already inside the app you live in</strong>, and reach for a paid or premium model only when the job is genuinely hard (a dissertation chapter, a bug that will not die) <strong>and</strong> the free one has visibly stalled. Ninety per cent of student work never needs the frontier.</p>
+      </div>
+      <p>A starting configuration: keep <strong>one</strong> free assistant as your daily driver, whichever you find least annoying to talk to. Reach for Gemini as the fast lookup, Claude or ChatGPT as the reliable writers, and Grok or a paid coding model when something technical will not budge.</p>
+      <p>The larger point outlasts every version number here. The labs are leapfrogging each other every few weeks, and no single app will stay "the best" for long. The durable skill is not loyalty to one logo. It is knowing your own jobs well enough to pick the right tool for each, and being sceptical enough to check what any of them tells you.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://openai.com/index/gpt-5-6/" target="_blank" rel="noopener">GPT-5.6: Frontier intelligence that scales with your ambition</a> <span>·OpenAI announcement (9 July 2026)</span></li>
+      <li><a href="https://www.anthropic.com/news/claude-sonnet-5" target="_blank" rel="noopener">Introducing Claude Sonnet 5</a> <span>·Anthropic, new default (30 June 2026)</span></li>
+      <li><a href="https://www.anthropic.com/news/claude-fable-5-mythos-5" target="_blank" rel="noopener">Claude Fable 5 and Claude Mythos 5</a> <span>·Anthropic, premium writing tier</span></li>
+      <li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/" target="_blank" rel="noopener">Gemini 3.5: frontier intelligence with action</a> <span>·Google, Flash availability &amp; benchmarks</span></li>
+      <li><a href="https://en.wikipedia.org/wiki/Grok_(chatbot)" target="_blank" rel="noopener">Grok (chatbot)</a> <span>·Grok 4.5 release, specs &amp; rankings</span></li>
+      <li><a href="https://privacy.claude.com/en/articles/10301952-updates-to-our-privacy-policy" target="_blank" rel="noopener">Updates to our Privacy Policy</a> <span>·Anthropic, consumer data &amp; retention</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Not sponsored, and not affiliated with any lab named above. Model versions and prices change fast; verify before you rely on them.</p>
+  </footer>
+
+  <script>
+    /* scroll reveals (matches the landing page) */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

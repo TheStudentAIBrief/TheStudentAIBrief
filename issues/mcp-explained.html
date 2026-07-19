@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCP: the USB-C port for AI · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into the Model Context Protocol, the open standard that lets an AI assistant plug into your notes, calendar, files and code through one common port." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="MCP: the USB-C port for AI" />
+  <meta property="og:description" content="One open standard now lets almost every AI assistant plug into your tools and data. Here is what it is, why it spread so fast, and the security catch." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 05 · The Plumbing</p>
+      <h1 class="title">MCP: the <em>USB-C port</em> for AI</h1>
+      <p class="dek">Chatbots got clever a while ago. What changed recently is that they can now reach your files, your calendar and your code. One quiet open standard is the reason why, and it spread across the whole industry in barely a year.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>6 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>The Plumbing series</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">An AI assistant that can only talk is a party trick. It writes a decent essay, drafts a plausible email, and then stops at the edge of the chat box, unable to touch anything real. The leap from a clever talker to something genuinely useful comes down to a boring-sounding word: <strong>integration</strong>. The assistant has to reach your actual notes, your actual calendar, your actual repository. And for most of AI's short history, wiring up each of those connections was a bespoke, brittle nightmare. The <strong>Model Context Protocol</strong>, or MCP, is the standard that made the wiring disappear.</p>
+
+      <p>If you have heard the phrase <em>"USB-C port for AI,"</em> that is MCP, and the analogy is worth taking literally. Before USB-C you had a drawer of incompatible cables: one for the printer, another for the camera, a third for the phone. USB-C replaced them with a single shape that any device could speak. MCP does the same thing for AI assistants and the tools they want to plug into.</p>
+
+      <div class="callout">
+        <span class="tag">The one-line version</span>
+        <p>MCP is an open standard that gives an AI assistant a single, common way to plug into external tools, apps and data sources. Build one MCP connector for your app, and <strong>every</strong> MCP-speaking assistant can use it. No more one custom integration per assistant per tool.</p>
+      </div>
+
+      <h2><span class="h2-kicker">The problem it solves</span>Why every connection used to be bespoke</h2>
+      <p>Picture the mess without a standard. You have a handful of AI assistants and a pile of tools you want them to reach: Google Drive, GitHub, your notes app, a database. Connecting them by hand means building a separate custom bridge for <em>every pairing</em>. Ten tools and five assistants is fifty integrations, each maintained forever. This is the "M times N" problem, and it was quietly killing agent projects before they shipped.</p>
+      <p>MCP turns that multiplication into an addition. Each tool exposes itself once, through an <strong>MCP server</strong>. Each assistant learns to speak MCP once, as an <strong>MCP client</strong>. After that, any client can talk to any server without knowing anything special about it, the same way any USB-C laptop charges from any USB-C charger.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>The shift · connecting tools to assistants</caption>
+          <thead>
+            <tr><th>Task</th><th>Before MCP</th><th>With MCP</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Add a new tool</td><td>Build a custom bridge for each assistant</td><td class="num">Ship one MCP server</td></tr>
+            <tr><td>Add a new assistant</td><td>Re-integrate every tool from scratch</td><td class="num">It speaks MCP already</td></tr>
+            <tr class="hero-row"><td>Total glue to maintain</td><td>tools × assistants</td><td class="num">tools + assistants</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="h2-kicker">Why it matters now</span>Agents are only useful if they can DO things</h2>
+      <p>The whole industry spent 2025 and 2026 talking about <em>agents</em>: AI that does not just answer but acts on your behalf. Books a slot, opens a pull request, reconciles a spreadsheet. An agent that cannot reach your stuff is a daydream. MCP is the layer that lets it reach, in a controlled and inspectable way, which is why the excitement around agents and the adoption of MCP arrived hand in hand.</p>
+      <p>Concretely, an MCP server can expose three kinds of thing to an assistant: <strong>tools</strong> it can call (send an email, run a query), <strong>resources</strong> it can read (a file, a calendar), and <strong>prompts</strong> it can reuse. The assistant sees a tidy menu and picks from it. That is the entire trick, and its plainness is the point.</p>
+
+      <blockquote>A model that can only produce words is an oracle. A model that can safely reach your tools is an assistant. MCP is the difference between the two.</blockquote>
+
+      <h2><span class="h2-kicker">Where it came from</span>An Anthropic idea the rivals adopted</h2>
+      <p>MCP was introduced by <strong>Anthropic</strong>, the company behind Claude, in <strong>November 2024</strong>, and released as an open standard rather than a proprietary hook. That decision mattered. Because anyone could implement it, the competition did. <strong>OpenAI</strong> adopted MCP in March 2025, wiring it across ChatGPT and its developer platform. <strong>Google</strong> confirmed support across Gemini soon after, and <strong>Microsoft</strong> built it into Windows and its developer tooling at Build 2025.</p>
+      <p>Rivals converging on a competitor's format is rare, and it is the strongest signal that a standard has genuinely won. In December 2025 Anthropic handed governance of MCP to the <strong>Agentic AI Foundation</strong>, a fund under the Linux Foundation co-founded with OpenAI and Block, so no single company owns the port everyone now depends on.</p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="val">Nov 2024</div>
+          <div class="lbl">Anthropic introduces MCP as an open standard</div>
+        </div>
+        <div class="stat">
+          <div class="val up">~97M</div>
+          <div class="lbl">Monthly SDK downloads reported by early 2026</div>
+        </div>
+        <div class="stat">
+          <div class="val">Mar 2025</div>
+          <div class="lbl">OpenAI adopts it; Google and Microsoft follow</div>
+        </div>
+        <div class="stat">
+          <div class="val">Dec 2025</div>
+          <div class="lbl">Donated to the Linux Foundation's Agentic AI Foundation</div>
+        </div>
+      </div>
+      <p>Treat the 97 million figure as a direction, not gospel: it comes from ecosystem reporting rather than an audited count, and downloads are not the same as active users. But the shape of the curve is not in doubt. Reporting put MCP at that level roughly sixteen months after launch, a faster ramp than most infrastructure standards ever manage.</p>
+
+      <h2><span class="h2-kicker">The catch</span>A universal port cuts both ways</h2>
+      <p>Here is the part the hype tends to skip. A standard that lets an assistant plug into anything also lets it plug into something <em>malicious</em>. MCP moved fast, and its security story is still catching up. Two problems deserve your attention before you install a random server you found on the internet.</p>
+      <ul class="clean">
+        <li><strong>Tool poisoning.</strong> An assistant decides which tool to call partly by reading the tool's description. A hostile MCP server can hide instructions inside that description, text you never see, telling the model to quietly copy your files or leak a secret. The tool looks normal in the menu and misbehaves once selected.</li>
+        <li><strong>Over-permissioning.</strong> A server you grant broad access can do broad damage, whether through malice or a bug. Give a connector your whole inbox and file store, and a single successful prompt injection has a large blast radius.</li>
+      </ul>
+      <p>These are not theoretical. In April 2026 researchers at Johns Hopkins hijacked Claude Code, Gemini CLI and GitHub Copilot by planting malicious instructions inside GitHub pull-request titles; the agents read the poisoned text as part of their task and exfiltrated repository secrets. The lesson is not "avoid MCP." It is "treat an MCP server like software you are about to run with your permissions," because that is exactly what it is.</p>
+
+      <div class="callout">
+        <span class="tag">Before you plug anything in</span>
+        <p>Install servers from sources you trust, the same way you would a browser extension. Grant the narrowest access that does the job, not blanket permissions. And prefer clients that <strong>show you each action before it runs</strong>, so a poisoned tool has to get past you, not just past the model.</p>
+      </div>
+
+      <h2><span class="h2-kicker">For the student builder</span>What to actually do with this</h2>
+      <p>The reason to care as a student is that MCP is the cheapest on-ramp to building something that feels like magic. You do not need to train a model or host anything heavy. You point an assistant at a few servers and it can suddenly reason over your real material:</p>
+      <ul class="clean">
+        <li><strong>Your notes.</strong> Connect a filesystem or notes server and ask your assistant to pull threads across a term of lecture notes, not just the one file in front of you.</li>
+        <li><strong>Your calendar and email.</strong> Let it draft replies and find a free slot, with you approving each send.</li>
+        <li><strong>Your code.</strong> A GitHub or filesystem server turns a coding assistant into one that reads your actual repository, opens issues and proposes changes you review.</li>
+      </ul>
+      <p>Start read-only. Wire up one server, keep it to things the assistant can look at but not change, and watch what it does. Add write access only once you trust both the server and the client's guard-rails. That single habit, <em>read before write, narrow before broad</em>, is most of MCP security in practice.</p>
+
+      <h2><span class="h2-kicker">The takeaway</span>The mental model to keep</h2>
+      <p>MCP is the port, not the intelligence. The model still does the thinking; MCP is the agreed shape that lets that thinking reach the world without a tangle of custom cables behind it. Boring, universal plumbing is exactly what a chaotic new field was missing, which is why it spread so fast.</p>
+      <p>So when you next hear that some assistant "supports MCP," read it the way you read "USB-C" on a gadget box. It means this thing plugs into the same ecosystem as everything else, no special cable required. Just remember that a universal port carries whatever you connect to it, so choose what you plug in with care.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://www.anthropic.com/news/model-context-protocol" target="_blank" rel="noopener">Introducing the Model Context Protocol</a> <span>·Anthropic, Nov 2024, the launch announcement</span></li>
+      <li><a href="https://en.wikipedia.org/wiki/Model_Context_Protocol" target="_blank" rel="noopener">Model Context Protocol</a> <span>·Wikipedia, origin and adoption timeline</span></li>
+      <li><a href="https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" target="_blank" rel="noopener">Donating MCP to the Agentic AI Foundation</a> <span>·Anthropic, Dec 2025 governance handover</span></li>
+      <li><a href="https://owasp.org/www-community/attacks/MCP_Tool_Poisoning" target="_blank" rel="noopener">MCP Tool Poisoning</a> <span>·OWASP, how the attack works</span></li>
+      <li><a href="https://developer.microsoft.com/blog/protecting-against-indirect-injection-attacks-mcp/" target="_blank" rel="noopener">Protecting against indirect prompt injection in MCP</a> <span>·Microsoft, defensive guidance</span></li>
+      <li><a href="https://www.digitalapplied.com/blog/mcp-97-million-downloads-model-context-protocol-mainstream" target="_blank" rel="noopener">MCP Hits 97M Downloads</a> <span>·reporting on the early-2026 adoption figure</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Explainer only. Install third-party MCP servers at your own risk, and grant them the least access they need.</p>
+  </footer>
+
+  <script>
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>

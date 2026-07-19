@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI for your dissertation, without getting caught out · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into the AI research tools worth using for a literature review, and the one rule that keeps you out of the misconduct office: never cite a source you have not opened." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="AI for your dissertation, without getting caught out" />
+  <meta property="og:description" content="Elicit, Consensus, NotebookLM and Claude Science can speed up a literature review. General chatbots invent citations. Here is how to tell them apart." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 07 · Research</p>
+      <h1 class="title">AI for your dissertation, <em>without getting caught out</em></h1>
+      <p class="dek">The right tools can find, sort and summarise real papers in minutes. A general chatbot will happily invent the ones that do not exist. Here is how to tell them apart, and the single rule that keeps you out of the misconduct office.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>9 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Practical guide</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">It is the week before your literature review is due, and a chatbot has just handed you ten perfectly formatted references: real-sounding authors, a plausible journal, a tidy DOI on the end. You paste them into your bibliography and move on. The problem is that some of those papers were never written. The model produced the <em>shape</em> of a citation, the way it produces the shape of a sentence, and it cannot tell the difference between a study that exists and one that merely sounds like it should.</p>
+
+      <p>This is the trap at the centre of using AI for research, and it is entirely avoidable. There is now a small class of tools built specifically to search the actual scientific literature, ground their answers in papers you can open, and show you the sentence a claim came from. Used well, they turn a fortnight of database wrangling into an afternoon. Used carelessly, or confused with a general chatbot, they are a fast route to an academic misconduct panel. The difference is a workflow, not a secret.</p>
+
+      <blockquote>A chatbot does not look things up and then tell you. It predicts what a plausible answer looks like. Sometimes that plausible answer is true.</blockquote>
+
+      <h2><span class="h2-kicker">Why the chatbot lies so well</span>The fabricated-citation problem</h2>
+      <p>Start with the failure mode, because it explains everything that follows. A general model such as ChatGPT, Gemini or a plain Claude chat is a next-word predictor. Ask it for sources and it generates text that <em>resembles</em> a reference list, assembled from patterns in its training data rather than retrieved from a database. The result is what researchers politely call a <strong>hallucinated reference</strong>: a citation that looks impeccable and points at nothing.</p>
+      <p>The rate is not trivial. A 2025 Deakin University study that checked references generated by GPT-4o found that <strong>roughly one in five citations were entirely fabricated</strong>, and more than half were either fake or carried factual errors. Earlier work published in <em>Scientific Reports</em> documented the same behaviour: invented titles, real authors bolted to papers they never wrote, DOIs formatted flawlessly and leading nowhere. The citations are convincing precisely because sounding right is the only thing the model is optimised to do.</p>
+      <div class="callout">
+        <span class="tag">The one rule</span>
+        <p><strong>Never cite a source you have not opened and read yourself.</strong> If an AI mentions a paper, treat that as a lead, not a fact. Find it on the publisher's site, Google Scholar or your library, confirm it exists, confirm it says what the AI claims, then cite the paper. If you cannot find it, it very likely does not exist, and a fabricated citation in your bibliography is misconduct whether you knew or not.</p>
+      </div>
+
+      <h2><span class="h2-kicker">Tools that cite real papers</span>The discovery engines</h2>
+      <p>The fix is to use tools that retrieve first and write second. Instead of inventing text, they search an index of genuine publications, then summarise what they actually found, with a link back to each one.</p>
+      <ul class="clean">
+        <li><strong>Elicit</strong> is the closest thing to an AI research assistant for a literature review. It searches across roughly <strong>125 million papers</strong>, finds relevant work even without an exact keyword match, and its signature trick is extraction: it pulls sample sizes, methods and outcomes into a <em>table</em>, one row per paper, so you can compare twenty studies at a glance. Every extracted figure shows the supporting quote from the source.</li>
+        <li><strong>Consensus</strong> answers a specific question by reading across the literature. Ask "does spaced repetition improve long-term recall" and it returns a synthesised answer, the papers behind it, and a "consensus meter" showing how much the studies actually agree. It searches over <strong>200 million papers</strong> and is built for evidence, not chat.</li>
+        <li><strong>Semantic Scholar</strong> is the free, no-frills backbone: a scholarly search engine from the Allen Institute for AI covering hundreds of millions of papers, with citation graphs and AI-generated summaries. It is the reliable place to confirm a paper exists and see who cited it.</li>
+      </ul>
+
+      <h2><span class="h2-kicker">Grounding on your own reading</span>NotebookLM and Claude Science</h2>
+      <p>A second category does something subtly different. Rather than search the whole internet, these tools answer <strong>only from the documents you give them</strong>, which is exactly what you want once you have gathered your papers and need to interrogate them.</p>
+      <p><strong>Google NotebookLM</strong> lets you upload up to fifty sources, PDFs, your own notes, lecture slides, and then ask questions across them. Because it is grounded in your uploads, it will not wander off into invented facts, and every answer carries <em>inline citations</em> you can click to jump to the exact passage. It is superb for "what did these six papers say about my variable" and for turning a stack of reading into a revision summary. One honest limit: it points you to the source, but you still write the page-level reference yourself.</p>
+      <p>At the heavier end, Anthropic launched <strong>Claude Science</strong> at the end of June 2026, an AI workbench that connects Claude (Opus 4.8 included) to more than <strong>60 scientific databases</strong> such as UniProt, PDB and ChEMBL. A coordinating agent parcels work out to specialists, and, notably, a separate reviewer agent checks every citation and calculation as it goes. It is aimed at working scientists in genomics, chemistry and structural biology rather than a first-year essay, but it signals the direction of travel: retrieval and verification built in, not bolted on.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Five tools · what each is for</caption>
+          <thead>
+            <tr><th>Tool</th><th>Best for</th><th>Free access?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Elicit</td><td>Finding papers, extracting data into comparison tables</td><td>Free tier, then paid credits</td></tr>
+            <tr><td>Consensus</td><td>Evidence-based answers to a specific question</td><td>Free tier, then ~£8/mo</td></tr>
+            <tr class="hero-row"><td>Semantic Scholar</td><td>Confirming a paper exists, citation graphs</td><td>Fully free</td></tr>
+            <tr><td>NotebookLM</td><td>Grounded answers from papers you upload</td><td>Free</td></tr>
+            <tr><td>Claude Science</td><td>Deep science across 60+ databases</td><td>Paid subscription</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="h2-kicker">A workflow that keeps you honest</span>Discover, triage, read, cite</h2>
+      <p>The tools only help if you keep them in their lane. A sane research loop looks like this, and the order matters:</p>
+      <ul class="clean">
+        <li><strong>Discover.</strong> Use Elicit or Consensus to surface candidate papers and get the lay of the land on your question. Treat the summaries as a map, not the territory.</li>
+        <li><strong>Triage.</strong> Skim the AI summaries to decide which handful of papers are actually worth your time. This is where the tools save you most: killing the ten irrelevant results before you open anything.</li>
+        <li><strong>Read the real paper.</strong> Open the source itself. Check that it exists, that it says what the summary claimed, and that the method and sample actually support the point you want to make.</li>
+        <li><strong>Cite the paper, not the AI.</strong> Your reference is to the study you read, in your own words, with your own critical read of it. The AI was scaffolding; it does not appear in your bibliography as a source of facts.</li>
+      </ul>
+      <p>Do it in that order and the AI never touches the part that has to be trustworthy. Skip to citing before reading, and you are one hallucinated DOI away from trouble.</p>
+
+      <h2><span class="h2-kicker">By the numbers</span>Why verification is not optional</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="val down">1 in 5</div>
+          <div class="lbl">GPT-4o citations found entirely fabricated in a 2025 Deakin study</div>
+        </div>
+        <div class="stat">
+          <div class="val">200M+</div>
+          <div class="lbl">Papers Consensus searches to ground its answers</div>
+        </div>
+        <div class="stat">
+          <div class="val">125M+</div>
+          <div class="lbl">Papers covered by Elicit for search and extraction</div>
+        </div>
+        <div class="stat">
+          <div class="val up">60+</div>
+          <div class="lbl">Scientific databases wired into Claude Science</div>
+        </div>
+      </div>
+
+      <h2><span class="h2-kicker">Read the rules first</span>What your university actually requires</h2>
+      <p>None of this is a licence to hand in AI-written work. UK policy is fragmented but converging, and the <strong>Russell Group</strong> principles, adopted across its 24 universities, are the clearest guide. The starting assumption in most schemes is blunt: <em>unless an assessment explicitly permits it, generative AI is not allowed</em>, and its output must be treated like any other person's work, acknowledged and cited, never passed off as your own.</p>
+      <p>In practice that means three things. Check the rubric for the specific assignment, because permission varies by module. Where AI use is allowed, <strong>declare it</strong> as your institution requires, usually a short statement of which tool you used and how. And understand that two things are always misconduct regardless of policy: submitting AI-generated text as your own writing, and citing sources you never verified. A fabricated reference is not a grey area. It is a fabrication.</p>
+
+      <p>The honest summary is cheering, not scary. These tools are genuinely good at the tedious 80% of a literature review: casting a wide net, summarising abstracts, organising what you find. They are not a shortcut through the 20% that is actually your degree: reading critically, thinking, and writing it up in your own voice. Keep AI on the discovery side of that line, verify every source with your own eyes, and you get the speed without the risk. Cross it, and the tool that was meant to save your dissertation is the thing that sinks it.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://www.russellgroup.ac.uk/sites/default/files/2025-01/Russell%20Group%20principles%20on%20generative%20AI%20in%20education.pdf" target="_blank" rel="noopener">Russell Group principles on the use of generative AI tools in education</a> <span>·UK university policy</span></li>
+      <li><a href="https://studyfinds.org/chatgpts-hallucination-problem-fabricated-references/" target="_blank" rel="noopener">Study: more than half of ChatGPT (GPT-4o) references are fabricated or flawed</a> <span>·Deakin University, 2025</span></li>
+      <li><a href="https://www.nature.com/articles/s41598-023-41032-5" target="_blank" rel="noopener">Fabrication and errors in the bibliographic citations generated by ChatGPT</a> <span>·Scientific Reports</span></li>
+      <li><a href="https://techcrunch.com/2026/06/30/anthropics-claude-science-bets-on-workflow-not-a-new-model-to-win-over-scientists/" target="_blank" rel="noopener">Anthropic's Claude Science bets on workflow to win over scientists</a> <span>·TechCrunch, Jun 2026</span></li>
+      <li><a href="https://elicit.com/" target="_blank" rel="noopener">Elicit: AI for scientific research</a> <span>·find, summarise, extract</span></li>
+      <li><a href="https://consensus.app/" target="_blank" rel="noopener">Consensus</a> <span>·evidence-based answer engine</span></li>
+      <li><a href="https://www.semanticscholar.org/" target="_blank" rel="noopener">Semantic Scholar</a> <span>·free scholarly search, Allen Institute for AI</span></li>
+      <li><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">Google NotebookLM</a> <span>·source-grounded notebook with citations</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Guidance only, not academic-conduct advice. Always follow your own institution's AI and assessment rules.</p>
+  </footer>
+
+  <script>
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
