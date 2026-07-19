@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kronos: the AI that reads markets like a language · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief deep dive into Kronos, the open-source foundation model that forecasts financial markets the way GPT predicts text." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Kronos: the AI that reads markets like a language" />
+  <meta property="og:description" content="The open-source model that treats a price chart as a language, and the clever trick that makes it work." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── TERMINAL CHART ── */
+    figure.terminal {
+      margin: 44px 0 8px;
+      background: #070707;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.08em;
+    }
+    .terminal-bar .sym { color: var(--gold); font-weight: 500; letter-spacing: 0.14em; }
+    .terminal-bar .live { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--bull); }
+    .terminal-bar .live::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--bull);
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(79,178,134,0.5); }
+      70% { box-shadow: 0 0 0 7px rgba(79,178,134,0); }
+      100% { box-shadow: 0 0 0 0 rgba(79,178,134,0); }
+    }
+    canvas#chart { display: block; width: 100%; height: 320px; }
+    figcaption {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      letter-spacing: 0.02em; line-height: 1.6; padding: 14px 2px 0;
+    }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      canvas#chart { height: 240px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Deep Dive Nº 01 · Foundation Models</p>
+      <h1 class="title">The AI that reads the market <em>like a language</em></h1>
+      <p class="dek">A new open-source model borrows the GPT playbook and points it at candlesticks. Instead of predicting the next word, it predicts the next candle, and the trick that makes it work is quietly brilliant.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>7 min read</span>
+        <span class="dot"></span>
+        <span>19 July 2026</span>
+        <span class="dot"></span>
+        <span>Accepted to AAAI 2026</span>
+      </div>
+
+      <figure class="terminal">
+        <div class="terminal-bar">
+          <span class="sym">KRONOS-BASE</span>
+          <span>BTC / USDT · 1H</span>
+          <span class="live">forecasting</span>
+        </div>
+        <canvas id="chart" width="1320" height="640" role="img"
+          aria-label="Animated candlestick chart: green and red history candles followed by a gold band of model-forecast candles."></canvas>
+        <figcaption>Illustrative candlesticks. Solid candles are observed history; the gold band marks where the model rolls forward its own predicted candles, sampled rather than calculated.</figcaption>
+      </figure>
+    </header>
+
+    <article>
+      <p class="lead">Almost every price-prediction tool ever built starts from the same blank slate. You pick one asset, gather its history, and train a model from scratch to fit that single series. A new model called <strong>Kronos</strong> throws that habit out. It asks a stranger question instead: what if a market chart is just another <em>language</em>, and you could pre-train one big model to speak it fluently, the way GPT was pre-trained on text?</p>
+
+      <p>That is the whole idea. Kronos is an open-source model released by a group of academic researchers and accepted to <strong>AAAI 2026</strong> under the title <em>"A Foundation Model for the Language of Financial Markets."</em> It has been called, only half-jokingly, "the GPT of finance." The label is loose, but the architecture genuinely earns the comparison, and understanding why is a neat lesson in how the whole foundation-model idea travels beyond text.</p>
+
+      <blockquote>Predicting the next candle is, mechanically, the same problem as predicting the next word. You just need a way to turn a candle into a token.</blockquote>
+
+      <h2><span class="h2-kicker">The shift</span>What "foundation model" actually buys you</h2>
+      <p>The phrase <em>foundation model</em> gets thrown around, so it's worth being concrete. A traditional quant model is bespoke: trained on one market, useful for that market, useless the moment you change assets. A foundation model is trained <strong>once, on almost everything</strong>, and then transfers to problems it never saw in training. It is the same reason one ChatGPT can write both a sonnet and a cover letter.</p>
+      <p>Kronos was pre-trained on roughly <strong>12 billion candlestick records from more than 45 global exchanges</strong>: equities, crypto, and beyond. That breadth is the point. By the time you hand it a chart it has never seen, it already carries a general sense of how markets behave: how volatility clusters, how trends exhaust themselves, how a quiet range tends to precede a breakout. You are fine-tuning intuition, not building it from zero.</p>
+
+      <h2><span class="h2-kicker">The clever bit</span>Turning candles into words</h2>
+      <p>Here is the obstacle. Language is already made of discrete symbols (words, characters, subword tokens), so a GPT just predicts the next one from a fixed vocabulary. But a candlestick is <strong>continuous</strong>: five raw numbers, Open, High, Low, Close and Volume (OHLCV), that can take any value at all. There is no vocabulary to predict from.</p>
+      <p>Kronos solves this in two stages, and this is the part worth slowing down for:</p>
+      <ul class="clean">
+        <li><strong>A tokenizer turns candles into "words."</strong> A dedicated neural network quantizes each candle's continuous OHLCV values into a small set of <em>discrete, hierarchical tokens</em>: coarse ones that capture the broad shape, finer ones that fill in the detail. This is the exact analogue of breaking a sentence into subword tokens.</li>
+        <li><strong>A decoder-only Transformer predicts the next token.</strong> With candles now expressed as tokens, you can train a plain autoregressive GPT: given the sequence so far, predict the next token, then the next, rolling forward. Decode those tokens back into OHLCV, and you have a forecast candle.</li>
+      </ul>
+      <p>Strip away the finance and it <em>is</em> a language model. The genuine innovation isn't the Transformer, which is standard. It is the tokenizer that makes the market speakable in the first place.</p>
+
+      <h2><span class="h2-kicker">The nuance most people miss</span>It doesn't predict a number. It samples a future.</h2>
+      <p>This is the most important idea in the whole piece. Kronos does not output a single confident price. Like an LLM writing a sentence, it <strong>samples</strong>, and it exposes the exact same knobs you would recognise from any chatbot:</p>
+      <div class="callout">
+        <span class="tag">The familiar dials</span>
+        <p><strong>Temperature (T)</strong> controls how adventurous the sampling is. <strong>Top-p</strong> nucleus sampling trims the improbable tail. And <strong>sample_count</strong> lets you draw many independent future paths at once, then average them or study how far they spread.</p>
+      </div>
+      <p>The payoff is that you get a <strong>distribution of possible futures</strong>, not one brittle line. The width of that fan is itself information, an estimate of uncertainty, which is why the same machinery doubles as a <strong>volatility forecaster</strong> and a generator of realistic <strong>synthetic market data</strong> for stress-testing other strategies.</p>
+
+      <h2><span class="h2-kicker">What ships</span>The model family</h2>
+      <p>Kronos is a family, not a single model, and it is released under the permissive <strong>MIT licence</strong>, commercial use included, which matters for anyone who wants to actually build on it. Weights live on Hugging Face; code and a live BTC/USDT demo are on GitHub.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>The Kronos family · decoder-only</caption>
+          <thead>
+            <tr><th>Model</th><th>Parameters</th><th>Context</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kronos-mini</td><td class="num">4.1 M</td><td class="num">2048</td><td>Smallest, longest window</td></tr>
+            <tr><td>Kronos-small</td><td class="num">24.7 M</td><td class="num">512</td><td>Lightweight</td></tr>
+            <tr class="hero-row"><td>Kronos-base</td><td class="num">102.3 M</td><td class="num">512</td><td>The workhorse</td></tr>
+            <tr><td>Kronos-large</td><td class="num">499.2 M</td><td class="num">512</td><td>Tokenizer weights closed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>By large-language-model standards these are tiny: half a billion parameters at the very top end, against the hundreds of billions in a frontier LLM. Markets carry far less raw information than human language, and it shows in the model sizes.</p>
+
+      <h2><span class="h2-kicker">Results</span>The numbers the authors report</h2>
+      <p>On the paper's own benchmarks, Kronos posts real gains over both dedicated time-series foundation models and from-scratch baselines:</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="val up">+93%</div>
+          <div class="lbl">RankIC in price forecasting vs. the leading time-series foundation model</div>
+        </div>
+        <div class="stat">
+          <div class="val down">&minus;9%</div>
+          <div class="lbl">Mean absolute error in volatility forecasting (lower is better)</div>
+        </div>
+        <div class="stat">
+          <div class="val up">+22%</div>
+          <div class="lbl">Generative fidelity of synthetic candlestick sequences</div>
+        </div>
+        <div class="stat">
+          <div class="val">12B</div>
+          <div class="lbl">Candlestick records pre-trained on, from 45+ exchanges</div>
+        </div>
+      </div>
+      <p>RankIC is the metric to notice. It measures <em>ranking</em> skill (does the model correctly order which assets will outperform which) rather than nailing an exact price. For anything trading-shaped, getting the order right matters far more than the decimal.</p>
+
+      <h2><span class="h2-kicker">Read this twice</span>The honest caveats</h2>
+      <p>A model that backtests brilliantly is not a money printer, and it's worth being blunt about the limits:</p>
+      <ul class="clean">
+        <li><strong>A short memory.</strong> The small, base, and large models see only <strong>512 candles</strong> of context; longer histories get truncated. Its working memory of the past is genuinely limited.</li>
+        <li><strong>The benchmarks are the authors' own.</strong> Impressive in-paper numbers routinely soften in live, adversarial, out-of-sample markets.</li>
+        <li><strong>Markets fight back.</strong> They are non-stationary and reflexive: the moment an edge is widely known, crowding erodes it. Regime shifts, slippage, and transaction costs quietly eat theoretical alpha.</li>
+        <li><strong>Shape is not profit.</strong> Forecasting the plausible <em>shape</em> of price action is a different, easier problem than predicting <em>direction profitably after costs</em>.</li>
+      </ul>
+
+      <h2><span class="h2-kicker">The takeaway</span>The mental model to keep</h2>
+      <p>Kronos is to a candlestick chart what GPT is to a paragraph: a pre-trained, general-purpose next-token predictor. The move that makes it novel is tokenising OHLCV so that the entire language-model toolkit (autoregressive pre-training, temperature sampling, transfer learning) suddenly applies to markets that were previously modelled one at a time.</p>
+      <p>Whether that cashes out as durable trading edge is the open, and much harder, question. But as a demonstration that the foundation-model recipe generalises beyond text, images, and code, reaching into the strange, noisy grammar of price itself, Kronos is one of the more quietly interesting releases of the year. And for students, it's a clean, real example of the single most transferable idea in modern AI: <em>tokenise it, then predict the next token</em>.</p>
+
+      <div class="issue-end">✦ End of deep dive ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://arxiv.org/abs/2508.02739" target="_blank" rel="noopener">Kronos: A Foundation Model for the Language of Financial Markets</a> <span>·arXiv 2508.02739 (AAAI 2026)</span></li>
+      <li><a href="https://github.com/shiyu-coder/Kronos" target="_blank" rel="noopener">shiyu-coder / Kronos</a> <span>·code, model family &amp; live demo</span></li>
+      <li><a href="https://huggingface.co/NeoQuasar/Kronos-base" target="_blank" rel="noopener">NeoQuasar / Kronos-base</a> <span>·weights on Hugging Face</span></li>
+      <li><a href="https://shiyu-coder.github.io/Kronos-demo/" target="_blank" rel="noopener">Kronos Live Forecast</a> <span>·BTC/USDT demo</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · Deep Dive series · © 2026 Theo Laredo<br>Explainer only. Nothing here is financial advice, and no model forecasts the market reliably.</p>
+  </footer>
+
+  <script>
+    /* ---- animated candlestick hero ---- */
+    (function () {
+      var canvas = document.getElementById('chart');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var BULL = '#4FB286', BEAR = '#D46A6A', GOLD = '#C9A84C';
+      var GRID = 'rgba(255,255,255,0.05)';
+      var DPR = Math.min(window.devicePixelRatio || 1, 2);
+      var W, H, pad = 16;
+
+      function resize() {
+        var rect = canvas.getBoundingClientRect();
+        W = rect.width; H = rect.height;
+        canvas.width = Math.round(W * DPR);
+        canvas.height = Math.round(H * DPR);
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      }
+
+      var N = 64, FC_START = 46, candles = [];
+      function build() {
+        candles = []; var price = 100, seedVol = 1.6;
+        for (var i = 0; i < N; i++) {
+          var forecast = i >= FC_START;
+          var vol = seedVol * (forecast ? 1.35 : 1);
+          var drift = Math.sin(i / 7) * 0.5 + (Math.random() - 0.5) * 0.4;
+          var open = price;
+          var close = open + drift + (Math.random() - 0.5) * vol * 2;
+          var high = Math.max(open, close) + Math.random() * vol;
+          var low = Math.min(open, close) - Math.random() * vol;
+          price = close;
+          candles.push({ o: open, h: high, l: low, c: close, fc: forecast });
+        }
+      }
+      build();
+
+      function bounds() {
+        var min = Infinity, max = -Infinity;
+        for (var i = 0; i < candles.length; i++) {
+          if (candles[i].l < min) min = candles[i].l;
+          if (candles[i].h > max) max = candles[i].h;
+        }
+        var m = (max - min) * 0.08;
+        return { min: min - m, max: max + m };
+      }
+
+      function draw(count) {
+        ctx.clearRect(0, 0, W, H);
+        var b = bounds(), plotW = W - pad * 2, plotH = H - pad * 2, slot = plotW / N;
+        var cw = Math.max(2, slot * 0.58);
+        function y(v) { return pad + plotH - ((v - b.min) / (b.max - b.min)) * plotH; }
+
+        ctx.strokeStyle = GRID; ctx.lineWidth = 1;
+        for (var g = 0; g <= 4; g++) {
+          var gy = pad + (plotH / 4) * g;
+          ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(W - pad, gy); ctx.stroke();
+        }
+
+        var bandX = pad + slot * FC_START;
+        ctx.fillStyle = 'rgba(201,168,76,0.06)';
+        ctx.fillRect(bandX, pad, W - pad - bandX, plotH);
+        ctx.strokeStyle = 'rgba(201,168,76,0.35)'; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(bandX, pad); ctx.lineTo(bandX, pad + plotH); ctx.stroke();
+        ctx.setLineDash([]);
+
+        var shown = Math.min(count, N);
+        for (var i = 0; i < shown; i++) {
+          var c = candles[i], cx = pad + slot * i + slot / 2, up = c.c >= c.o;
+          var col = c.fc ? GOLD : (up ? BULL : BEAR);
+          ctx.globalAlpha = c.fc ? 0.9 : 1;
+          ctx.strokeStyle = col; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.moveTo(cx, y(c.h)); ctx.lineTo(cx, y(c.l)); ctx.stroke();
+          var yo = y(c.o), yc = y(c.c), top = Math.min(yo, yc), bh = Math.max(2, Math.abs(yc - yo));
+          if (c.fc) { ctx.strokeRect(cx - cw / 2, top, cw, bh); }
+          else { ctx.fillStyle = col; ctx.fillRect(cx - cw / 2, top, cw, bh); }
+          ctx.globalAlpha = 1;
+          if (i === shown - 1) {
+            var yy = y(c.c);
+            ctx.strokeStyle = 'rgba(201,168,76,0.5)'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(pad, yy); ctx.lineTo(W - pad, yy); ctx.stroke(); ctx.setLineDash([]);
+            ctx.fillStyle = GOLD; ctx.beginPath(); ctx.arc(cx, yy, 2.6, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+      }
+
+      var frame = 0, drawn = 0;
+      function tick() {
+        frame++;
+        if (frame % 2 === 0 && drawn < N) drawn++;
+        draw(drawn);
+        if (drawn < N) requestAnimationFrame(tick);
+      }
+      function start() {
+        resize();
+        if (reduce) { draw(N); return; }
+        drawn = 0; frame = 0; requestAnimationFrame(tick);
+      }
+      if (window.ResizeObserver) {
+        new ResizeObserver(function () { resize(); draw(Math.max(drawn, 1)); }).observe(canvas);
+      } else {
+        window.addEventListener('resize', function () { resize(); draw(Math.max(drawn, 1)); });
+      }
+      start();
+    })();
+
+    /* ---- scroll reveals (matches the landing page) ---- */
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
