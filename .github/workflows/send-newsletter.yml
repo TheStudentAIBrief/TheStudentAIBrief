@@ -1,0 +1,31 @@
+name: Send newsletter issue
+
+# Manual trigger: pick an issue slug and click Run. No laptop, no browser —
+# runs on GitHub's servers and sends via Resend. (Kept manual on purpose so a
+# routine commit never fires an accidental send. To go fully auto-on-push, add
+# an `on: push` trigger filtered to issues/**.)
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue slug (filename in issues/ without .html, e.g. mcp-explained)'
+        required: true
+        type: string
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Send issue
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SUBSCRIBERS: ${{ secrets.SUBSCRIBERS_CSV }}
+          FROM_EMAIL: ${{ vars.FROM_EMAIL }}
+          REPLY_TO: ${{ vars.REPLY_TO }}
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+          UNSUBSCRIBE_EMAIL: ${{ vars.UNSUBSCRIBE_EMAIL }}
+        run: node newsletter/send-issue.mjs "${{ inputs.issue }}"

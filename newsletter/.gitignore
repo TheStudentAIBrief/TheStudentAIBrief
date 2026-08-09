@@ -1,0 +1,4 @@
+# Never commit subscriber data or rendered previews
+subscribers.csv
+*.csv
+preview.html
