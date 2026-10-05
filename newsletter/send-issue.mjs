@@ -35,7 +35,7 @@ if (!slug) {
 const SITE_BASE_URL = (process.env.SITE_BASE_URL || 'https://thestudentaibrief.com').replace(/\/$/, '');
 const FROM_EMAIL = process.env.FROM_EMAIL || 'The Student AI Brief <hello@thestudentaibrief.com>';
 const REPLY_TO = process.env.REPLY_TO || '';
-const UNSUBSCRIBE_EMAIL = process.env.UNSUBSCRIBE_EMAIL || 'hello@thestudentaibrief.com';
+const UNSUBSCRIBE_EMAIL = process.env.UNSUBSCRIBE_EMAIL || 'theojohnwebsterlaredo@gmail.com';
 
 // ---- helpers ----
 const stripTags = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();

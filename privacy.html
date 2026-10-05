@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy · The Student AI Brief</title>
+  <meta name="description" content="How The Student AI Brief handles analytics, cookies and subscriber email addresses." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* stat tiles */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+    }
+    .stat { background: var(--card-bg); padding: 26px 24px; }
+    .stat .val {
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--white);
+    }
+    .stat .val.up { color: var(--bull); }
+    .stat .val.down { color: var(--bear); }
+    .stat .lbl {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+
+    /* spec table */
+    .table-scroll { overflow-x: auto; margin: 36px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { border-collapse: collapse; width: 100%; min-width: 480px; background: var(--card-bg); }
+    caption {
+      caption-side: top; text-align: left;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); padding: 16px 20px 8px;
+    }
+    th, td { text-align: left; padding: 14px 20px; font-size: 15px; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); font-weight: 500;
+    }
+    tbody td:first-child { color: var(--white); font-weight: 500; }
+    td.num { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.hero-row td:first-child { color: var(--gold); }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Privacy</p>
+      <h1 class="title">What we collect, <em>and why</em></h1>
+      <p class="dek">The short version: nothing is tracked unless you say yes, and your email address is only ever used to send you the newsletter.</p>
+    </header>
+
+    <article>
+      <p>The Student AI Brief is run by Theo Laredo. For anything on this page, email <a href="mailto:theojohnwebsterlaredo@gmail.com">theojohnwebsterlaredo@gmail.com</a>.</p>
+
+      <h2><span class="h2-kicker">Analytics</span>Only if you accept</h2>
+      <p>If you click Accept on the cookie banner, we use PostHog to see which pages and issues get read: pages viewed, where you came from, device and browser type, approximate location from your IP address, and which links you click. PostHog stores a random identifier in your browser so repeat visits count as one reader. The data is stored in the EU and kept for up to one year. We do not record your screen, and we do not use any of this for advertising.</p>
+      <p>If you click Decline, nothing is loaded or stored. You can change your choice at any time with the Cookie settings link at the bottom of any page.</p>
+
+      <h2><span class="h2-kicker">Newsletter</span>Your email address</h2>
+      <p>If you subscribe, you sign up through Beehiiv, which stores your email address. We also keep a private copy of the subscriber list so we can send issues through our email provider, Resend. Your address is used only to send the newsletter. To unsubscribe, use the link in any issue or email <a href="mailto:theojohnwebsterlaredo@gmail.com?subject=unsubscribe">theojohnwebsterlaredo@gmail.com</a>.</p>
+
+      <h2><span class="h2-kicker">Your rights</span>Under UK GDPR</h2>
+      <p>You can ask for a copy of your data, ask us to correct or delete it, and complain to the Information Commissioner's Office at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>.</p>
+
+      <p>Last updated: 5 October 2026</p>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://blog.google/products-and-platforms/products/chrome/gemini-3-auto-browse/" target="_blank" rel="noopener">Chrome gets new Gemini 3 features, including auto browse</a> <span>·Google · the 28 Jan 2026 launch</span></li>
+      <li><a href="https://claude.com/blog/claude-for-chrome" target="_blank" rel="noopener">Piloting Claude in Chrome</a> <span>·Anthropic · red-team attack numbers</span></li>
+      <li><a href="https://www.anthropic.com/research/prompt-injection-defenses" target="_blank" rel="noopener">Mitigating the risk of prompt injections in browser use</a> <span>·Anthropic · defences &amp; the 1% figure</span></li>
+      <li><a href="https://unit42.paloaltonetworks.com/ai-agent-prompt-injection/" target="_blank" rel="noopener">Web-Based Indirect Prompt Injection Observed in the Wild</a> <span>·Palo Alto Unit 42 · real attacks</span></li>
+      <li><a href="https://thehackernews.com/2026/03/claude-extension-flaw-enabled-zero.html" target="_blank" rel="noopener">Claude Extension Flaw Enabled Zero-Click XSS Prompt Injection</a> <span>·The Hacker News · ShadowPrompt</span></li>
+      <li><a href="https://blog.google/security/prompt-injections-web/" target="_blank" rel="noopener">The current state of prompt injections on the web</a> <span>·Google Security · the +32% rise</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · © 2026 Theo Laredo</p>
+  </footer>
+
+  <script src="analytics.js" defer></script>
+</body>
+</html>

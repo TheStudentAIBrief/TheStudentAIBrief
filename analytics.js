@@ -5,6 +5,8 @@
   var KEY = 'phc_rKhDbEpEXwcgUY62HjBSZBQoPA4hXaixbd9ngZtpW5Nz'; // public project key
   var STORE = 'analytics-consent';
   var loaded = false;
+  // Resolved against this script, so it works from the root and from issues/.
+  var PRIVACY_URL = new URL('privacy.html', document.currentScript.src).href;
 
   function choice() {
     try { return localStorage.getItem(STORE); } catch (e) { return null; }
@@ -51,6 +53,12 @@
     text.style.cssText = 'margin:0 0 0.9rem;';
     text.textContent = 'We would like to use analytics cookies to see which issues get read. ' +
       'They stay off unless you accept.';
+    text.appendChild(document.createTextNode(' '));
+    var more = document.createElement('a');
+    more.href = PRIVACY_URL;
+    more.textContent = 'Privacy';
+    more.style.cssText = 'color:inherit;text-decoration:underline;';
+    text.appendChild(more);
     var actions = document.createElement('div');
     actions.style.cssText = 'display:flex;gap:0.6rem;flex-wrap:wrap;';
     var base = "font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;" +
