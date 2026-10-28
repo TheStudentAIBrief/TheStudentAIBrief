@@ -12,15 +12,15 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black:   #0A0A0A;
-      --off-black: #111111;
-      --card-bg: #141414;
-      --border:  #1E1E1E;
-      --gold:    #C9A84C;
-      --gold-light: #E2C06A;
-      --gold-dim: #7A6128;
-      --white:   #F5F2EC;
-      --muted:   #888880;
+      --black:   #1A1D21;
+      --off-black: #1F2227;
+      --card-bg: #212429;
+      --border:  #2C3036;
+      --gold:    #3A6EA5;
+      --gold-light: #5B9BD8;
+      --gold-dim: #4F7FA8;
+      --white:   #E8EAED;
+      --muted:   #9DA3AB;
       --radius:  4px;
     }
 
@@ -44,7 +44,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 18px 40px;
-      background: rgba(10,10,10,0.88);
+      background: rgba(26,29,33,0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
@@ -113,7 +113,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background-image: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(201,168,76,0.04) 0%, transparent 70%);
+      background-image: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(58,110,165,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -201,6 +201,28 @@
     }
 
     .hero-form button:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .hero-form button:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .subscribe-status {
+      margin-top: 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      min-height: 16px;
+    }
+    .subscribe-status.ok { color: var(--gold); }
+    .subscribe-status.error { color: #D46A6A; }
+
+    .hero {
+      scroll-margin-top: 90px;
+    }
 
     .hero-proof {
       margin-top: 20px;
@@ -324,7 +346,7 @@
       transition: transform 0.3s ease;
     }
 
-    .issue-card:hover { background: #1A1A1A; }
+    .issue-card:hover { background: #262A30; }
     .issue-card:hover::before { transform: scaleX(1); }
 
     .card-issue-num {
@@ -511,7 +533,7 @@
     }
 
     .pricing-card.featured {
-      background: #161208;
+      background: #182430;
       position: relative;
     }
 
@@ -708,11 +730,11 @@
   <nav>
     <span class="nav-logo">The Student AI Brief</span>
     <span class="nav-issue">Issue #4 — Live Now</span>
-    <a href="https://studentaibrief.beehiiv.com/" target="_blank" class="nav-cta">Subscribe Free</a>
+    <a href="#subscribe" class="nav-cta">Subscribe Free</a>
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="subscribe">
     <p class="hero-eyebrow">Weekly · Free · For UK Students</p>
     <h1 class="hero-headline">
       AI tools that<br>
@@ -724,10 +746,12 @@
       <strong>Under 3 minutes to read.</strong> Written for students who want the edge, not the hype.
     </p>
 
-    <div class="hero-form">
-      <input type="email" placeholder="your@student.ac.uk" />
-      <button onclick="window.open('https://studentaibrief.beehiiv.com/','_blank')">Get the Brief →</button>
-    </div>
+    <form class="hero-form" id="subscribe-form">
+      <input type="email" name="email" placeholder="your@student.ac.uk" required />
+      <input type="text" name="company" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button type="submit">Get the Brief →</button>
+    </form>
+    <p class="subscribe-status" id="subscribe-status" aria-live="polite"></p>
 
     <p class="hero-proof">
       <span>✦</span> Free forever · No spam · Unsubscribe anytime
@@ -944,7 +968,7 @@
           <li class="active">Quick Hits: 3 tips per issue</li>
           <li class="active">Full archive access</li>
         </ul>
-        <a href="https://studentaibrief.beehiiv.com/" target="_blank" class="plan-btn primary">Subscribe Free</a>
+        <a href="#subscribe" class="plan-btn primary">Subscribe Free</a>
       </div>
 
       <div class="pricing-card featured">
@@ -987,6 +1011,52 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
     reveals.forEach(el => observer.observe(el));
+
+    // Signup form — posts to the Cloudflare Worker relay, which holds the
+    // Resend API key server-side. See relay/README.md for deploy steps.
+    // TODO: replace with the real Worker URL once relay/ is deployed.
+    const WORKER_URL = 'https://student-ai-brief-signup.YOUR-SUBDOMAIN.workers.dev';
+
+    const subscribeForm = document.getElementById('subscribe-form');
+    const subscribeStatus = document.getElementById('subscribe-status');
+
+    if (subscribeForm) {
+      subscribeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const emailInput = subscribeForm.elements.email;
+        const honeypot = subscribeForm.elements.company.value;
+        const button = subscribeForm.querySelector('button');
+
+        subscribeStatus.textContent = '';
+        subscribeStatus.className = 'subscribe-status';
+        button.disabled = true;
+        button.textContent = 'Subscribing…';
+
+        try {
+          const res = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailInput.value, company: honeypot }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.ok) {
+            subscribeStatus.textContent = "You're on the list. First issue lands Thursday.";
+            subscribeStatus.classList.add('ok');
+            subscribeForm.reset();
+          } else {
+            subscribeStatus.textContent = data.error || 'Something went wrong. Try again shortly.';
+            subscribeStatus.classList.add('error');
+          }
+        } catch {
+          subscribeStatus.textContent = 'Could not reach the server. Try again shortly.';
+          subscribeStatus.classList.add('error');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Get the Brief →';
+        }
+      });
+    }
 
     // Hover parallax on cards
     document.querySelectorAll('.issue-card').forEach(card => {
