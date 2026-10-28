@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find sources in half the time · The Student AI Brief</title>
+  <meta name="description" content="A Student AI Brief guide to using Perplexity AI for academic sourcing — what it gets right, where it quietly makes things up, and the habit that keeps you safe either way." />
+
+  <!-- Open Graph (for the email hero image + link previews) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Find sources in half the time" />
+  <meta property="og:description" content="Perplexity surfaces citations in seconds instead of minutes of keyword-guessing. Here's how to use it without getting burned by a source that doesn't hold up." />
+  <meta property="og:site_name" content="The Student AI Brief" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0A0A0A;
+      --off-black:  #111111;
+      --card-bg:    #141414;
+      --border:     #1E1E1E;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --gold-dim:   #7A6128;
+      --white:      #F5F2EC;
+      --muted:      #888880;
+      --bull:       #4FB286;
+      --bear:       #D46A6A;
+      --radius:     4px;
+      --measure:    44rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 40px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,10,0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); letter-spacing: 0.1em; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 8px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── ARTICLE HERO ── */
+    header.hero { padding: 132px 0 24px; }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 30px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1.title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(40px, 6.5vw, 72px);
+      line-height: 1.02; letter-spacing: -0.02em;
+      color: var(--white); text-wrap: balance;
+      margin-bottom: 26px;
+    }
+    h1.title em { font-style: italic; color: var(--gold); }
+
+    .dek {
+      font-size: clamp(19px, 2.4vw, 23px);
+      font-weight: 300; line-height: 1.5; color: var(--muted);
+      max-width: 34rem; text-wrap: pretty; margin-bottom: 32px;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+      font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+      letter-spacing: 0.04em; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .byline b { color: var(--white); font-weight: 500; }
+    .byline .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+    /* ── ARTICLE BODY ── */
+    article { padding: 24px 0 40px; }
+    article p { margin-bottom: 24px; }
+    article a { color: var(--gold); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    article a:hover { color: var(--gold-light); }
+
+    .lead::first-letter {
+      font-family: 'Playfair Display', serif; float: left;
+      font-size: 76px; line-height: 0.8; font-weight: 900;
+      color: var(--gold); padding: 8px 14px 0 0;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 38px); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.01em; color: var(--white);
+      text-wrap: balance; margin: 60px 0 8px;
+    }
+    .h2-kicker {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 4px;
+    }
+    article strong { color: var(--white); font-weight: 600; }
+    article em { color: var(--gold-light); font-style: italic; }
+
+    blockquote {
+      margin: 40px 0; padding: 6px 0 6px 28px;
+      border-left: 2px solid var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 30px); font-style: italic;
+      line-height: 1.34; color: var(--white); text-wrap: pretty;
+    }
+
+    /* callout */
+    .callout {
+      background: #161208; border: 1px solid var(--gold-dim);
+      border-radius: var(--radius); padding: 24px 28px; margin: 40px 0;
+    }
+    .callout .tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--gold); display: block; margin-bottom: 10px;
+    }
+    .callout p { margin: 0; font-size: 16px; }
+    .callout p + p { margin-top: 14px; }
+
+    ul.clean { list-style: none; margin: 0 0 24px; padding: 0; }
+    ul.clean li { position: relative; padding-left: 28px; margin-bottom: 14px; }
+    ul.clean li::before {
+      content: ''; position: absolute; left: 4px; top: 0.72em;
+      width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg);
+    }
+
+    /* ── END / SOURCES ── */
+    .issue-end {
+      display: flex; align-items: center; gap: 16px; margin: 56px 0 44px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .issue-end::before, .issue-end::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cta-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 44px 40px; text-align: center; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-block::before {
+      content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .cta-block h3 {
+      font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .cta-block p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+    .cta-block a {
+      display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--black); background: var(--gold);
+      padding: 14px 30px; text-decoration: none; transition: background 0.2s, transform 0.15s;
+    }
+    .cta-block a:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 34px 40px 60px;
+      max-width: var(--measure); margin: 0 auto;
+    }
+    footer h4 {
+      font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--gold-dim); margin-bottom: 16px; font-weight: 500;
+    }
+    .sources { list-style: none; }
+    .sources li { margin-bottom: 10px; font-size: 14px; }
+    .sources a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .sources a:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .sources span { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+    .colophon {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+      line-height: 1.7; letter-spacing: 0.02em; margin-top: 28px;
+    }
+
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 22px; }
+      nav { padding: 14px 22px; }
+      .nav-back { display: none; }
+      header.hero { padding: 116px 0 20px; }
+      footer { padding: 32px 22px 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">The Student AI Brief</a>
+    <a href="../index.html" class="nav-back">← All issues</a>
+    <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener" class="nav-cta">Subscribe Free</a>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Issue Nº 003 · Research</p>
+      <h1 class="title">Find sources in <em>half the time</em></h1>
+      <p class="dek">Perplexity surfaces citations in seconds instead of twenty minutes of keyword-guessing on Google Scholar. The catch: it will hand you a confident-sounding source that doesn't hold up. Here's how to use it without getting burned.</p>
+      <div class="byline">
+        <span><b>The Student AI Brief</b></span>
+        <span class="dot"></span>
+        <span>4 min read</span>
+        <span class="dot"></span>
+        <span>5 June 2026</span>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">Every dissertation starts the same way: a blank search bar and a topic you can describe in a sentence but not in the three keywords Google Scholar actually wants. You type something, skim ten irrelevant abstracts, retype it, and twenty minutes later you have one half-decent paper and a headache. Perplexity skips that whole stage. Ask it the question in plain English and it comes back with an answer <strong>and</strong> the sources behind it, in the time it takes to read this sentence.</p>
+
+      <p>That speed is real, and it's why Perplexity has become the first stop for a lot of students doing early-stage research. But it changes what you're actually doing when you search. Google Scholar makes you find the paper. Perplexity makes you trust a summary of the paper — and a summary is only as good as the thing generating it.</p>
+
+      <h2><span class="h2-kicker">Why it's faster</span>You're asking a question, not guessing a keyword</h2>
+      <p>Academic databases were built for people who already know the vocabulary of their field. If you don't know that your topic is called "algorithmic price discovery" rather than "how AI predicts stock prices," you'll search the wrong term and miss the right papers entirely. Perplexity doesn't need you to know the vocabulary. It reads your question, works out what you actually mean, and searches on your behalf — then shows its sources inline, not as a reading list you have to chase down separately.</p>
+      <p>Used well, that makes it a map of a topic you know nothing about yet, not a replacement for reading the territory.</p>
+
+      <div class="callout">
+        <span class="tag">Prompt of the week</span>
+        <p>"What are the main academic positions on [your topic]? Name the camps, give me a source for each, and tell me where the disagreement actually is."</p>
+        <p>This gets you the shape of a debate in one pass — who disagrees with whom, and why — instead of a flat list of papers that all sound like they agree.</p>
+      </div>
+
+      <h2><span class="h2-kicker">The catch</span>Confident isn't the same as correct</h2>
+      <p>The Tow Center for Digital Journalism at Columbia tested eight AI search tools against known news articles in 2025 and found that <strong>misattributed or fabricated citations were common across almost all of them</strong> — tools confidently linked claims to sources that didn't say what the tool claimed, or didn't exist in the form cited. Perplexity performed better than most of the tools tested, but "better than the worst AI search tools" is a low bar for something going in your bibliography.</p>
+      <p>The failure mode is specific: the summary sounds right, the citation looks real, and the link sometimes even resolves to a real paper — just not one that supports the claim you're about to make. A marker who clicks through and finds that mismatch won't blame the AI. They'll blame you.</p>
+
+      <h2><span class="h2-kicker">The habit that works</span>Click through, every time</h2>
+      <ul class="clean">
+        <li><strong>Open the actual source before you cite it.</strong> Not the summary, the paper. Confirm it says what Perplexity says it says.</li>
+        <li><strong>Use it for structure, not content.</strong> Ask it to group a reading list into themes before you write — that's a job it's genuinely reliable at.</li>
+        <li><strong>Pair it with Scholar, not instead of it.</strong> Perplexity finds the angle fast. Google Scholar confirms the paper is real, and shows you who's cited it since — which is often where the better source is hiding.</li>
+      </ul>
+
+      <p>Treat Perplexity as the fastest way to find out what to read, not as the last stop before you write it down. The twenty minutes it saves you at the start are real. Spend some of them back double-checking the three sources you're actually going to use.</p>
+
+      <div class="issue-end">✦ End of issue ✦</div>
+
+      <div class="cta-block">
+        <h3>Get the next one in your inbox</h3>
+        <p>One AI tool, one prompt, three quick wins, every week. Free, and under 3 minutes to read.</p>
+        <a href="https://studentaibrief.beehiiv.com/" target="_blank" rel="noopener">Subscribe Free →</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <h4>Sources</h4>
+    <ul class="sources">
+      <li><a href="https://www.cjr.org/tow_center/we-compared-eight-ai-search-engines-theyre-all-bad-at-citing-news.php" target="_blank" rel="noopener">We Compared Eight AI Search Engines. They're All Bad at Citing News.</a> <span>·Tow Center for Digital Journalism, Columbia Journalism Review, 2025</span></li>
+      <li><a href="https://www.perplexity.ai/" target="_blank" rel="noopener">Perplexity AI</a> <span>·product site</span></li>
+      <li><a href="https://scholar.google.com/intl/en/scholar/about.html" target="_blank" rel="noopener">About Google Scholar</a> <span>·how citation tracking works</span></li>
+    </ul>
+    <p class="colophon">The Student AI Brief · © 2026 Theo Laredo<br>Explainer only. Verify any source before it goes in a bibliography — yours is the name on the essay.</p>
+  </footer>
+
+  <script>
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      if (!reveals.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+  <script src="../analytics.js" defer></script>
+</body>
+</html>
